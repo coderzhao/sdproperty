@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <!--<parent>-->
+        <!--<artifactId>yxsq</artifactId>-->
+        <!--<groupId>com.note</groupId>-->
+        <!--<version>1.0-SNAPSHOT</version>-->
+    <!--</parent>-->
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.note</groupId>
+    <artifactId>common</artifactId>
+
+    <version>1.0.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
+    <name>基础通用公共模块</name>
+    <description>基础通用模块，各种静态方法，工具类</description>
+
+
+    <dependencies>
+        <dependency>
+            <groupId>org.mybatis.generator</groupId>
+            <artifactId>mybatis-generator-core</artifactId>
+            <version>1.3.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mybatis.generator</groupId>
+            <artifactId>mybatis-generator-maven-plugin</artifactId>
+            <version>1.3.2</version>
+        </dependency>
+
+    </dependencies>
+
+    <distributionManagement>
+        <repository>
+            <id>snapshot</id>
+            <name>mayi-dubbo-api-snapshot</name>
+            <url>http://192.168.40.237:8081/repository/mayi-dubbo-api-snapshot/</url>
+        </repository>
+        <!--<snapshotRepository>-->
+        <!--<id>snapshots</id>-->
+        <!--<name>mayi_dubbo_api_release</name>-->
+        <!--<url>http://192.168.56.103:8081/repository/mayi_dubbo_api_release/</url>-->
+        <!--</snapshotRepository>-->
+    </distributionManagement>
+
+
+</project>

@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/mvc"
+			 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+			 xmlns:task="http://www.springframework.org/schema/task"
+			 xmlns:beans="http://www.springframework.org/schema/beans"
+			 xmlns:p="http://www.springframework.org/schema/p"
+			 xmlns:context="http://www.springframework.org/schema/context"
+			 xmlns:mvc="http://www.springframework.org/schema/mvc"
+			 xmlns:mongo="http://www.springframework.org/schema/data/mongo"
+			  xmlns:websocket="http://www.springframework.org/schema/websocket"
+			 xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/task
+		http://www.springframework.org/schema/task/spring-task-3.1.xsd
+		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+		http://www.springframework.org/schema/data/mongo http://www.springframework.org/schema/data/mongo/spring-mongo.xsd
+		http://www.springframework.org/schema/websocket
+        http://www.springframework.org/schema/websocket/spring-websocket.xsd
+		http://www.springframework.org/schema/context
+		http://www.springframework.org/schema/context/spring-context.xsd">
+
+	<!-- DispatcherServlet Context: defines this servlet's request-processing infrastructure -->
+	
+	<!-- Enables the Spring MVC @Controller programming model -->
+	<!--<annotation-driven />-->
+	<task:annotation-driven/>
+	<!--<mvc:annotation-driven />-->
+	<context:annotation-config/>
+	
+
+
+<!-- additional settings from Quadrant -->  
+	<!-- <beans:bean id="cameraDataHandlerManager" class="com.quadrant.CameraDataHandlerManager"/> -->
+	<beans:bean id="FDCameraDataHandler" class="com.quadrant.FDCameraDataHandler"/>
+	<beans:bean id="CameraServerBroadcaster" class="com.quadrant.CameraServerBroadcaster">
+		<beans:property name="port" value="${PORT}"/>
+		<!-- <beans:property name="ethName" value="enp4s0"/> --><!--network interface name  -->
+		<beans:property name="address" value="${ADDRESS}"/>
+	</beans:bean>
+	
+	<beans:bean class="com.quadrant.CameraServerBootstrap" init-method="init"/>
+	
+    <!-- <beans:bean id="IPCServerStartup" class="com.quadrant.IPCServerStartup" init-method="startup">
+    		<beans:property name="listener" ref="FDCameraDataHandler"/>
+    </beans:bean> -->
+    
+	<beans:bean id="NTechFRService" class="com.quadrant.fr.NTechFRService">
+		<beans:property name="host" value="${SDK_IP}"/>
+		<beans:property name="gallery" value="${GALLERY}"/>
+	</beans:bean>    
+	
+	<beans:bean id="SysConfiguration" class="com.quadrant.SysConfiguration">
+		<beans:property name="snapshotFolder" value="${snapshotFolder}"/>
+		<beans:property name="detectFace" value="${detectFace}"/>
+		<beans:property name="saveSnapshot" value="${saveSnapshot}"/>
+		<beans:property name="drawFRBox" value="${drawFRBox}"/>
+		<beans:property name="saveFR2DB" value="${saveFR2DB}"/>
+		<beans:property name="cameraDataThreshold" value="${cameraDataThreshold}"/>
+	</beans:bean>
+	
+	
+	<!-- <beans:bean id="threadPool" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+	    核心线程数 
+	    <beans:property name="corePoolSize" value="10" />
+	    最大线程数
+	    <beans:property name="maxPoolSize" value="50" />
+	    队列最大长度
+	    <beans:property name="queueCapacity" value="1000" />
+	    线程池维护线程所允许的空闲时间
+	    <beans:property name="keepAliveSeconds" value="300" />
+	    线程池对拒绝任务(无线程可用)的处理策略
+	    <beans:property name="rejectedExecutionHandler">
+	        <beans:bean class="java.util.concurrent.ThreadPoolExecutor$CallerRunsPolicy" />
+	    </beans:property>
+	</beans:bean> -->
+
+    <beans:bean id="CameraWebSocketHandler" class="com.quadrant.ws.CameraWebSocketHandler"/>
+
+
+<!-- additional settings from Quadrant --> 
+
+
+	<!-- Handles HTTP GET requests for /resources/** by efficiently serving up static resources in the ${webappRoot}/resources directory -->
+
+	<!-- 配置静态资源，直接映射到对应的文件夹，不被DispatcherServlet处理，3.04新增功能，需要重新设置spring-mvc-3.0.xsd -->
+	<mvc:resources mapping="/img/**" location="/img/"/>
+	<mvc:resources mapping="/js/**" location="/js/"/>
+	<mvc:resources mapping="/css/**" location="/css/"/>
+	<!--<mvc:resources mapping="/html/**" location="/html/"/>-->
+	<!--<mvc:resources mapping="/snapshot/**" location="/snapshot/"/>-->
+	<mvc:resources mapping="/upload/**" location="/upload/"/>
+	
+
+	<!-- Resolves views selected for rendering by @Controllers to .jsp resources in the /WEB-INF/views directory -->
+	<!--<beans:bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">-->
+		<!--<beans:property name="prefix" value="/WEB-INF/views/" />-->
+		<!--<beans:property name="suffix" value=".jsp" />-->
+	<!--</beans:bean>-->
+	<beans:bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<beans:property name="prefix" value="/" />
+		<beans:property name="suffix" value=".html" />
+	</beans:bean>
+
+	<!-- 引入项目配置文件 -->
+	<beans:bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<beans:property name="locations">
+			<beans:list>
+				<beans:value>classpath:redis.properties</beans:value><!-- 引入redis配置文件 -->
+				<beans:value>classpath:sa.properties</beans:value><!-- 定义spring-jdbc配置信息路径 -->
+				<beans:value>classpath:mongodb.properties</beans:value><!-- 定义spring-mongodb配置信息路径 -->
+				<beans:value>classpath:config.properties</beans:value><!-- 定义spring-mongodb配置信息路径 -->
+			</beans:list>
+		</beans:property>
+	</beans:bean>
+
+	<!-- mybatis 导入属性配置文件 1 -->
+	<!-- 导入主库的驱动 />-->
+	<beans:bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+	    <beans:property name="driverClassName" value="${jdbc.driverClassName}" />  
+	    <beans:property name="url" value="${jdbc.url}" />  
+	</beans:bean>  
+	  
+	<beans:bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">  
+	    <beans:property name="dataSource" ref="dataSource" />  
+	</beans:bean>  
+	  
+	<beans:bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+	    <beans:property name="dataSource" ref="dataSource" />
+		<beans:property name="mapperLocations" value="classpath:mapper/*.xml"/>
+	</beans:bean>  
+	<!-- mybatis 配置完毕 -->
+
+
+	<!-- mybatis 导入属性配置文件 2 -->
+	<!-- 导入小视频库的驱动 />-->
+	<!--<beans:bean id="dataSource_video" class="org.springframework.jdbc.datasource.DriverManagerDataSource">-->
+		<!--<beans:property name="driverClassName" value="${jdbc.driverClassName}" />-->
+		<!--<beans:property name="url" value="${jdbc.url_video}" />-->
+	<!--</beans:bean>-->
+
+	<!--<beans:bean id="transactionManagerVideo" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">-->
+		<!--<beans:property name="dataSource" ref="dataSource_video" />-->
+	<!--</beans:bean>-->
+
+	<!--<beans:bean id="sqlSessionFactoryVideo" class="org.mybatis.spring.SqlSessionFactoryBean">-->
+		<!--<beans:property name="configLocation" value="classpath:mybatis-config_video.xml" />-->
+		<!--<beans:property name="dataSource" ref="dataSource_video" />-->
+		<!--<beans:property name="mapperLocations" value="classpath:mapper_video/*.xml"/>-->
+	<!--</beans:bean>-->
+	<!-- mybatis 配置完毕 -->
+
+	<!-- mybatis 对应的mapper bean -->
+
+
+	<!-- mybatis 对应的mapper bean end -->
+
+	<!-- 加载redis配置文件，可以后面用，为了简单我用得默认配置 -->
+	<beans:bean id="redisPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
+		<beans:property name="maxIdle" value="${redis.maxIdle}" />
+		<beans:property name="maxTotal" value="${redis.maxActive}" />
+		<beans:property name="maxWaitMillis" value="${redis.maxWait}" />
+		<beans:property name="testOnBorrow" value="${redis.testOnBorrow}" />
+	</beans:bean>
+
+	<beans:bean id="redisConnectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"
+				p:hostName="${redis.host}" p:port="${redis.port}"
+		  		p:poolConfig-ref="redisPoolConfig" />
+	<beans:bean id="stringSerializer" class="org.springframework.data.redis.serializer.StringRedisSerializer"/>
+	<!-- 开启事务，可以通过transcational注解控制 -->
+	<beans:bean id="RedisTemplate" class="org.springframework.data.redis.core.RedisTemplate">
+		<beans:property name="connectionFactory" ref="redisConnectionFactory" />
+		<beans:property name="keySerializer" ref="stringSerializer" />
+		<beans:property name="enableTransactionSupport" value="true" />
+	</beans:bean>
+	<!--redis end-->
+
+	<!-- mongo-begin -->
+	<!--<mongo:mongo-client id="mongo" host="${mongo.host}" port="${mongo.port}"-->
+						<!--credentials="${mongo.username}:${mongo.password}@${mongo.dbname}">-->
+		<!--<mongo:client-options connections-per-host="${mongo.connectionsPerHost}"-->
+							  <!--threads-allowed-to-block-for-connection-multiplier="${mongo.threadsAllowedToBlockForConnectionMultiplier}"-->
+							  <!--connect-timeout="${mongo.connectTimeout}"-->
+							  <!--max-wait-time="${mongo.maxWaitTime}"-->
+							  <!--socket-timeout="${mongo.socketTimeout}"/>-->
+	<!--</mongo:mongo-client>-->
+	<!--<mongo:db-factory dbname="${mongo.dbname}" mongo-ref="mongo"/>-->
+
+	<!--<beans:bean id="mongoTemplate" class="org.springframework.data.mongodb.core.MongoTemplate">-->
+	<!--<beans:constructor-arg ref="mongoDbFactory" />-->
+	<!--</beans:bean>-->
+	<!--mongo-end-->
+
+	<context:component-scan base-package="com.note.cms, com.quadrant">
+		
+		<!--<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>-->
+	</context:component-scan>
+
+	<!--给不同的dao包配置不同的数据源, 主库－ yxsq-->
+	<beans:bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<beans:property name="basePackage" value="com.note.cms.dao"/>
+		<beans:property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
+	</beans:bean>
+
+	<!-- springMVC上传文件时，需要配置MultipartResolver处理器 -->
+	<!--<beans:bean id="multipartResolver"-->
+		  <!--class="org.springframework.web.multipart.commons.CommonsMultipartResolver">-->
+		<!--<beans:property name="defaultEncoding" value="utf-8"></beans:property>-->
+		<!--<beans:property name="maxUploadSize" value="10485760000"></beans:property>-->
+		<!--<beans:property name="maxInMemorySize" value="40960"></beans:property>-->
+	<!--</beans:bean>-->
+
+	<!--<beans:bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">-->
+		<!--<beans:property name="basePackage" value="com.note.cms.daovideo"/>-->
+		<!--<beans:property name="sqlSessionFactoryBeanName" value="sqlSessionFactoryVideo"/>-->
+	<!--</beans:bean>-->
+
+	<mvc:interceptors>
+		<mvc:interceptor>
+			<mvc:mapping path="/*/*" />
+			<beans:bean class="com.note.cms.interceptor.CalCostTimeInterceptor" >
+			</beans:bean>
+		</mvc:interceptor>
+	</mvc:interceptors>
+
+	<!-- session timeout interceptor -->
+	<mvc:interceptors>
+		<mvc:interceptor>
+			<mvc:mapping path="/*/*" />
+			<beans:bean class="com.note.cms.interceptor.SessionTimeoutInterceptor" >
+				<beans:property name="allowUrls">
+					<beans:list>
+						<beans:value>login.do</beans:value>
+						<beans:value>addlog.do</beans:value>
+						<beans:value>/relogin.do</beans:value>
+						<beans:value>/api/</beans:value>
+						<beans:value>/device/</beans:value>
+					</beans:list>
+				</beans:property>
+			</beans:bean>
+		</mvc:interceptor>
+	</mvc:interceptors>
+
+	<!-- exception handler -->
+	<beans:bean id="handlerExceptionResolver"
+		  class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver" >
+		<beans:property name="exceptionMappings">
+			<beans:props>
+				<beans:prop key="com.note.cms.interceptor.SessionTimeoutException">/blank</beans:prop>
+			</beans:props>
+		</beans:property>
+	</beans:bean>
+
+	<!--将json中的字符串格式化为  yyyy-MM-dd HH:mm:ss-->
+	<mvc:annotation-driven>
+		<mvc:message-converters>
+			<beans:bean
+					class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+				<beans:property name="objectMapper">
+					<beans:bean class="com.fasterxml.jackson.databind.ObjectMapper">
+						<!-- 处理responseBody 里面日期类型 -->
+						<beans:property name="dateFormat">
+							<beans:bean class="java.text.SimpleDateFormat">
+								<beans:constructor-arg type="java.lang.String" value="yyyy-MM-dd HH:mm:ss" />
+							</beans:bean>
+						</beans:property>
+						<!-- 时区指定 -->
+						<beans:property name="timeZone" value="GMT+8" />
+						<!-- 为null字段时不显示 -->
+						<!--<beans:property name="serializationInclusion">-->
+							<!--<beans:value type="com.fasterxml.jackson.annotation.JsonInclude.Include">NON_NULL</beans:value>-->
+						<!--</beans:property>-->
+					</beans:bean>
+				</beans:property>
+			</beans:bean>
+		</mvc:message-converters>
+	</mvc:annotation-driven>
+
+	<!--<mvc:annotation-driven>-->
+		<!--<mvc:message-converters>-->
+			<!--<beans:bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">-->
+				<!--<beans:property name="objectMapper" value="#{jsonUtil.mapper}"/>-->
+				<!--<beans:property name="supportedMediaTypes">-->
+					<!--<beans:list>-->
+						<!--<beans:value>text/json;charset=UTF-8</beans:value>-->
+					<!--</beans:list>-->
+				<!--</beans:property>-->
+			<!--</beans:bean>-->
+		<!--</mvc:message-converters>-->
+	<!--</mvc:annotation-driven>-->
+
+
+
+</beans:beans>

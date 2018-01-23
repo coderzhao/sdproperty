@@ -1,0 +1,403 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_ztcmsweb" default="compile.module.ztcmsweb">
+  <dirname property="module.ztcmsweb.basedir" file="${ant.file.module_ztcmsweb}"/>
+  
+  <property name="module.jdk.home.ztcmsweb" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.ztcmsweb" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.ztcmsweb" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.ztcmsweb" value="-encoding UTF-8 -source 1.6 -target 1.6 ${compiler.args}"/>
+  
+  <property name="ztcmsweb.output.dir" value="CMSWeb/target/classes"/>
+  <property name="ztcmsweb.testoutput.dir" value="CMSWeb/target/test-classes"/>
+  
+  <path id="ztcmsweb.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="ztcmsweb.module.production.classpath">
+    <path refid="${module.jdk.classpath.ztcmsweb}"/>
+    <path refid="library.maven:_org.springframework:spring-context:4.0.2.release.classpath"/>
+    <path refid="library.maven:_org.springframework:spring-aop:4.0.2.release.classpath"/>
+    <path refid="library.maven:_aopalliance:aopalliance:1.0.classpath"/>
+    <path refid="library.maven:_org.springframework:spring-beans:4.0.2.release.classpath"/>
+    <path refid="library.maven:_org.springframework:spring-core:4.0.2.release.classpath"/>
+    <path refid="library.maven:_org.springframework:spring-expression:4.0.2.release.classpath"/>
+    <path refid="library.maven:_org.springframework:spring-webmvc:4.0.2.release.classpath"/>
+    <path refid="library.maven:_org.springframework:spring-web:4.0.2.release.classpath"/>
+    <path refid="library.maven:_org.aspectj:aspectjrt:1.6.10.classpath"/>
+    <path refid="library.maven:_org.slf4j:slf4j-api:1.6.6.classpath"/>
+    <path refid="library.maven:_javax.inject:javax.inject:1.classpath"/>
+    <path refid="library.maven:_org.mybatis:mybatis:3.1.1.classpath"/>
+    <path refid="library.maven:_org.mybatis:mybatis-spring:1.1.1.classpath"/>
+    <path refid="library.maven:_org.springframework:spring-tx:3.1.1.release.classpath"/>
+    <path refid="library.maven:_org.springframework:spring-jdbc:3.1.1.release.classpath"/>
+    <path refid="library.maven:_javax.servlet:servlet-api:2.5.classpath"/>
+    <path refid="library.maven:_javax.servlet.jsp:jsp-api:2.1.classpath"/>
+    <path refid="library.maven:_javax.servlet:jstl:1.2.classpath"/>
+    <path refid="library.maven:_org.codehaus.jackson:jackson-core-lgpl:1.9.6.classpath"/>
+    <path refid="library.maven:_org.codehaus.jackson:jackson-core-asl:1.9.4.classpath"/>
+    <path refid="library.maven:_org.codehaus.jackson:jackson-mapper-asl:1.9.5.classpath"/>
+    <path refid="library.maven:_org.codehaus.jackson:jackson-mapper-lgpl:1.9.6.classpath"/>
+    <path refid="library.maven:_com.alibaba:fastjson:1.1.30.classpath"/>
+    <path refid="library.maven:_commons-dbcp:commons-dbcp:1.4.classpath"/>
+    <path refid="library.maven:_commons-pool:commons-pool:1.5.6.classpath"/>
+    <path refid="library.maven:_c3p0:c3p0:0.9.1.2.classpath"/>
+    <path refid="library.maven:_mysql:mysql-connector-java:5.1.16.classpath"/>
+    <path refid="library.maven:_cglib:cglib-nodep:2.2.2.classpath"/>
+    <path refid="library.maven:_org.apache.commons:commons-lang3:3.1.classpath"/>
+    <path refid="library.maven:_commons-io:commons-io:2.4.classpath"/>
+    <path refid="library.maven:_commons-collections:commons-collections:3.2.1.classpath"/>
+    <path refid="library.maven:_commons-beanutils:commons-beanutils:1.8.3.classpath"/>
+    <path refid="library.maven:_commons-logging:commons-logging:1.1.1.classpath"/>
+    <path refid="library.maven:_commons-codec:commons-codec:1.7.classpath"/>
+    <path refid="library.maven:_com.google.code.gson:gson:1.7.1.classpath"/>
+    <path refid="library.maven:_org.mybatis.generator:mybatis-generator-core:1.3.2.classpath"/>
+    <path refid="library.maven:_org.mybatis.generator:mybatis-generator-maven-plugin:1.3.2.classpath"/>
+    <path refid="library.maven:_org.apache.maven:maven-plugin-api:3.0.4.classpath"/>
+    <path refid="library.maven:_org.apache.maven:maven-model:3.0.4.classpath"/>
+    <path refid="library.maven:_org.apache.maven:maven-artifact:3.0.4.classpath"/>
+    <path refid="library.maven:_org.sonatype.sisu:sisu-inject-plexus:2.3.0.classpath"/>
+    <path refid="library.maven:_org.codehaus.plexus:plexus-component-annotations:1.5.5.classpath"/>
+    <path refid="library.maven:_org.codehaus.plexus:plexus-classworlds:2.4.classpath"/>
+    <path refid="library.maven:_org.sonatype.sisu:sisu-inject-bean:2.3.0.classpath"/>
+    <path refid="library.maven:_org.sonatype.sisu:sisu-guice:no_aop:3.1.0.classpath"/>
+    <path refid="library.maven:_org.sonatype.sisu:sisu-guava:0.9.9.classpath"/>
+    <path refid="library.maven:_org.apache.maven:maven-project:3.0-alpha-2.classpath"/>
+    <path refid="library.maven:_org.codehaus.plexus:plexus-utils:1.5.6.classpath"/>
+    <path refid="library.maven:_org.codehaus.plexus:plexus-interpolation:1.1.classpath"/>
+    <path refid="library.maven:_org.apache.maven:maven-compat:3.0-alpha-2.classpath"/>
+    <path refid="library.maven:_org.apache.maven.wagon:wagon-provider-api:1.0-beta-4.classpath"/>
+    <path refid="library.maven:_org.codehaus.plexus:plexus-container-default:1.0-beta-3.0.5.classpath"/>
+    <path refid="library.maven:_org.apache.xbean:xbean-reflect:3.4.classpath"/>
+    <path refid="library.maven:_commons-logging:commons-logging-api:1.1.classpath"/>
+    <path refid="library.maven:_com.google.code.google-collections:google-collect:snapshot-20080530.classpath"/>
+    <path refid="library.maven:_org.codehaus.woodstox:wstx-asl:3.2.6.classpath"/>
+    <path refid="library.maven:_stax:stax-api:1.0.1.classpath"/>
+    <path refid="library.maven:_org.sonatype.spice:model-builder:1.3.classpath"/>
+    <path refid="library.maven:_org.apache.maven:maven-project-builder:3.0-alpha-2.classpath"/>
+    <pathelement location="${common.output.dir}"/>
+    <path refid="library.maven:_com.gexin.platform:gexin-rp-sdk-http:4.0.1.2.classpath"/>
+    <path refid="library.maven:_com.gexin.platform:gexin-rp-sdk-base:4.0.0.7.classpath"/>
+    <path refid="library.maven:_org.codehaus.jackson:jackson-all:1.8.5.classpath"/>
+    <path refid="library.maven:_com.google.protobuf:protobuf-java:2.5.0.classpath"/>
+    <path refid="library.maven:_com.gexin.platform:gexin-rp-sdk-template:4.0.0.5.classpath"/>
+    <path refid="library.maven:_org.springframework.data:spring-data-redis:1.5.0.release.classpath"/>
+    <path refid="library.maven:_redis.clients:jedis:2.8.0.classpath"/>
+    <path refid="library.maven:_org.apache.commons:commons-pool2:2.3.classpath"/>
+    <path refid="library.maven:_org.springframework:spring-context-support:4.0.2.release.classpath"/>
+    <path refid="library.maven:_org.springframework:spring-jms:4.0.2.release.classpath"/>
+    <path refid="library.maven:_org.apache.activemq:activemq-all:5.9.0.classpath"/>
+    <path refid="library.maven:_org.apache.xbean:xbean-spring:3.16.classpath"/>
+  </path>
+  
+  <path id="ztcmsweb.runtime.production.module.classpath">
+    <pathelement location="${ztcmsweb.output.dir}"/>
+    <path refid="library.maven:_org.springframework:spring-context:4.0.2.release.classpath"/>
+    <path refid="library.maven:_org.springframework:spring-aop:4.0.2.release.classpath"/>
+    <path refid="library.maven:_aopalliance:aopalliance:1.0.classpath"/>
+    <path refid="library.maven:_org.springframework:spring-beans:4.0.2.release.classpath"/>
+    <path refid="library.maven:_org.springframework:spring-core:4.0.2.release.classpath"/>
+    <path refid="library.maven:_org.springframework:spring-expression:4.0.2.release.classpath"/>
+    <path refid="library.maven:_org.springframework:spring-webmvc:4.0.2.release.classpath"/>
+    <path refid="library.maven:_org.springframework:spring-web:4.0.2.release.classpath"/>
+    <path refid="library.maven:_org.aspectj:aspectjrt:1.6.10.classpath"/>
+    <path refid="library.maven:_org.slf4j:slf4j-api:1.6.6.classpath"/>
+    <path refid="library.maven:_org.slf4j:jcl-over-slf4j:1.6.6.classpath"/>
+    <path refid="library.maven:_org.slf4j:slf4j-log4j12:1.6.6.classpath"/>
+    <path refid="library.maven:_log4j:log4j:1.2.15.classpath"/>
+    <path refid="library.maven:_javax.inject:javax.inject:1.classpath"/>
+    <path refid="library.maven:_org.mybatis:mybatis:3.1.1.classpath"/>
+    <path refid="library.maven:_org.mybatis:mybatis-spring:1.1.1.classpath"/>
+    <path refid="library.maven:_org.springframework:spring-tx:3.1.1.release.classpath"/>
+    <path refid="library.maven:_org.springframework:spring-jdbc:3.1.1.release.classpath"/>
+    <path refid="library.maven:_javax.servlet:jstl:1.2.classpath"/>
+    <path refid="library.maven:_org.codehaus.jackson:jackson-core-lgpl:1.9.6.classpath"/>
+    <path refid="library.maven:_org.codehaus.jackson:jackson-core-asl:1.9.4.classpath"/>
+    <path refid="library.maven:_org.codehaus.jackson:jackson-mapper-asl:1.9.5.classpath"/>
+    <path refid="library.maven:_org.codehaus.jackson:jackson-mapper-lgpl:1.9.6.classpath"/>
+    <path refid="library.maven:_com.alibaba:fastjson:1.1.30.classpath"/>
+    <path refid="library.maven:_commons-dbcp:commons-dbcp:1.4.classpath"/>
+    <path refid="library.maven:_commons-pool:commons-pool:1.5.6.classpath"/>
+    <path refid="library.maven:_c3p0:c3p0:0.9.1.2.classpath"/>
+    <path refid="library.maven:_mysql:mysql-connector-java:5.1.16.classpath"/>
+    <path refid="library.maven:_cglib:cglib-nodep:2.2.2.classpath"/>
+    <path refid="library.maven:_org.apache.commons:commons-lang3:3.1.classpath"/>
+    <path refid="library.maven:_commons-io:commons-io:2.4.classpath"/>
+    <path refid="library.maven:_commons-collections:commons-collections:3.2.1.classpath"/>
+    <path refid="library.maven:_commons-beanutils:commons-beanutils:1.8.3.classpath"/>
+    <path refid="library.maven:_commons-logging:commons-logging:1.1.1.classpath"/>
+    <path refid="library.maven:_commons-codec:commons-codec:1.7.classpath"/>
+    <path refid="library.maven:_com.google.code.gson:gson:1.7.1.classpath"/>
+    <path refid="library.maven:_org.mybatis.generator:mybatis-generator-core:1.3.2.classpath"/>
+    <path refid="library.maven:_org.mybatis.generator:mybatis-generator-maven-plugin:1.3.2.classpath"/>
+    <path refid="library.maven:_org.apache.maven:maven-plugin-api:3.0.4.classpath"/>
+    <path refid="library.maven:_org.apache.maven:maven-model:3.0.4.classpath"/>
+    <path refid="library.maven:_org.apache.maven:maven-artifact:3.0.4.classpath"/>
+    <path refid="library.maven:_org.sonatype.sisu:sisu-inject-plexus:2.3.0.classpath"/>
+    <path refid="library.maven:_org.codehaus.plexus:plexus-component-annotations:1.5.5.classpath"/>
+    <path refid="library.maven:_org.codehaus.plexus:plexus-classworlds:2.4.classpath"/>
+    <path refid="library.maven:_org.sonatype.sisu:sisu-inject-bean:2.3.0.classpath"/>
+    <path refid="library.maven:_org.sonatype.sisu:sisu-guice:no_aop:3.1.0.classpath"/>
+    <path refid="library.maven:_org.sonatype.sisu:sisu-guava:0.9.9.classpath"/>
+    <path refid="library.maven:_org.apache.maven:maven-project:3.0-alpha-2.classpath"/>
+    <path refid="library.maven:_org.codehaus.plexus:plexus-utils:1.5.6.classpath"/>
+    <path refid="library.maven:_org.codehaus.plexus:plexus-interpolation:1.1.classpath"/>
+    <path refid="library.maven:_org.apache.maven:maven-compat:3.0-alpha-2.classpath"/>
+    <path refid="library.maven:_org.apache.maven.wagon:wagon-provider-api:1.0-beta-4.classpath"/>
+    <path refid="library.maven:_org.codehaus.plexus:plexus-container-default:1.0-beta-3.0.5.classpath"/>
+    <path refid="library.maven:_org.apache.xbean:xbean-reflect:3.4.classpath"/>
+    <path refid="library.maven:_commons-logging:commons-logging-api:1.1.classpath"/>
+    <path refid="library.maven:_com.google.code.google-collections:google-collect:snapshot-20080530.classpath"/>
+    <path refid="library.maven:_org.codehaus.woodstox:wstx-asl:3.2.6.classpath"/>
+    <path refid="library.maven:_stax:stax-api:1.0.1.classpath"/>
+    <path refid="library.maven:_org.sonatype.spice:model-builder:1.3.classpath"/>
+    <path refid="library.maven:_org.apache.maven:maven-project-builder:3.0-alpha-2.classpath"/>
+    <path refid="common.runtime.production.module.classpath"/>
+    <path refid="library.maven:_com.gexin.platform:gexin-rp-sdk-http:4.0.1.2.classpath"/>
+    <path refid="library.maven:_com.gexin.platform:gexin-rp-sdk-base:4.0.0.7.classpath"/>
+    <path refid="library.maven:_org.codehaus.jackson:jackson-all:1.8.5.classpath"/>
+    <path refid="library.maven:_com.google.protobuf:protobuf-java:2.5.0.classpath"/>
+    <path refid="library.maven:_com.gexin.platform:gexin-rp-sdk-template:4.0.0.5.classpath"/>
+    <path refid="library.maven:_org.springframework.data:spring-data-redis:1.5.0.release.classpath"/>
+    <path refid="library.maven:_redis.clients:jedis:2.8.0.classpath"/>
+    <path refid="library.maven:_org.apache.commons:commons-pool2:2.3.classpath"/>
+    <path refid="library.maven:_org.springframework:spring-context-support:4.0.2.release.classpath"/>
+    <path refid="library.maven:_org.springframework:spring-jms:4.0.2.release.classpath"/>
+    <path refid="library.maven:_org.apache.activemq:activemq-all:5.9.0.classpath"/>
+    <path refid="library.maven:_org.apache.xbean:xbean-spring:3.16.classpath"/>
+  </path>
+  
+  <path id="ztcmsweb.module.classpath">
+    <path refid="${module.jdk.classpath.ztcmsweb}"/>
+    <pathelement location="${ztcmsweb.output.dir}"/>
+    <path refid="library.maven:_org.springframework:spring-context:4.0.2.release.classpath"/>
+    <path refid="library.maven:_org.springframework:spring-aop:4.0.2.release.classpath"/>
+    <path refid="library.maven:_aopalliance:aopalliance:1.0.classpath"/>
+    <path refid="library.maven:_org.springframework:spring-beans:4.0.2.release.classpath"/>
+    <path refid="library.maven:_org.springframework:spring-core:4.0.2.release.classpath"/>
+    <path refid="library.maven:_org.springframework:spring-expression:4.0.2.release.classpath"/>
+    <path refid="library.maven:_org.springframework:spring-webmvc:4.0.2.release.classpath"/>
+    <path refid="library.maven:_org.springframework:spring-web:4.0.2.release.classpath"/>
+    <path refid="library.maven:_org.aspectj:aspectjrt:1.6.10.classpath"/>
+    <path refid="library.maven:_org.slf4j:slf4j-api:1.6.6.classpath"/>
+    <path refid="library.maven:_org.slf4j:jcl-over-slf4j:1.6.6.classpath"/>
+    <path refid="library.maven:_org.slf4j:slf4j-log4j12:1.6.6.classpath"/>
+    <path refid="library.maven:_log4j:log4j:1.2.15.classpath"/>
+    <path refid="library.maven:_javax.inject:javax.inject:1.classpath"/>
+    <path refid="library.maven:_org.mybatis:mybatis:3.1.1.classpath"/>
+    <path refid="library.maven:_org.mybatis:mybatis-spring:1.1.1.classpath"/>
+    <path refid="library.maven:_org.springframework:spring-tx:3.1.1.release.classpath"/>
+    <path refid="library.maven:_org.springframework:spring-jdbc:3.1.1.release.classpath"/>
+    <path refid="library.maven:_javax.servlet:servlet-api:2.5.classpath"/>
+    <path refid="library.maven:_javax.servlet.jsp:jsp-api:2.1.classpath"/>
+    <path refid="library.maven:_javax.servlet:jstl:1.2.classpath"/>
+    <path refid="library.maven:_org.codehaus.jackson:jackson-core-lgpl:1.9.6.classpath"/>
+    <path refid="library.maven:_org.codehaus.jackson:jackson-core-asl:1.9.4.classpath"/>
+    <path refid="library.maven:_org.codehaus.jackson:jackson-mapper-asl:1.9.5.classpath"/>
+    <path refid="library.maven:_org.codehaus.jackson:jackson-mapper-lgpl:1.9.6.classpath"/>
+    <path refid="library.maven:_com.alibaba:fastjson:1.1.30.classpath"/>
+    <path refid="library.maven:_commons-dbcp:commons-dbcp:1.4.classpath"/>
+    <path refid="library.maven:_commons-pool:commons-pool:1.5.6.classpath"/>
+    <path refid="library.maven:_c3p0:c3p0:0.9.1.2.classpath"/>
+    <path refid="library.maven:_mysql:mysql-connector-java:5.1.16.classpath"/>
+    <path refid="library.maven:_cglib:cglib-nodep:2.2.2.classpath"/>
+    <path refid="library.maven:_org.apache.commons:commons-lang3:3.1.classpath"/>
+    <path refid="library.maven:_commons-io:commons-io:2.4.classpath"/>
+    <path refid="library.maven:_commons-collections:commons-collections:3.2.1.classpath"/>
+    <path refid="library.maven:_commons-beanutils:commons-beanutils:1.8.3.classpath"/>
+    <path refid="library.maven:_commons-logging:commons-logging:1.1.1.classpath"/>
+    <path refid="library.maven:_commons-codec:commons-codec:1.7.classpath"/>
+    <path refid="library.maven:_com.google.code.gson:gson:1.7.1.classpath"/>
+    <path refid="library.maven:_org.mybatis.generator:mybatis-generator-core:1.3.2.classpath"/>
+    <path refid="library.maven:_org.mybatis.generator:mybatis-generator-maven-plugin:1.3.2.classpath"/>
+    <path refid="library.maven:_org.apache.maven:maven-plugin-api:3.0.4.classpath"/>
+    <path refid="library.maven:_org.apache.maven:maven-model:3.0.4.classpath"/>
+    <path refid="library.maven:_org.apache.maven:maven-artifact:3.0.4.classpath"/>
+    <path refid="library.maven:_org.sonatype.sisu:sisu-inject-plexus:2.3.0.classpath"/>
+    <path refid="library.maven:_org.codehaus.plexus:plexus-component-annotations:1.5.5.classpath"/>
+    <path refid="library.maven:_org.codehaus.plexus:plexus-classworlds:2.4.classpath"/>
+    <path refid="library.maven:_org.sonatype.sisu:sisu-inject-bean:2.3.0.classpath"/>
+    <path refid="library.maven:_org.sonatype.sisu:sisu-guice:no_aop:3.1.0.classpath"/>
+    <path refid="library.maven:_org.sonatype.sisu:sisu-guava:0.9.9.classpath"/>
+    <path refid="library.maven:_org.apache.maven:maven-project:3.0-alpha-2.classpath"/>
+    <path refid="library.maven:_org.codehaus.plexus:plexus-utils:1.5.6.classpath"/>
+    <path refid="library.maven:_org.codehaus.plexus:plexus-interpolation:1.1.classpath"/>
+    <path refid="library.maven:_org.apache.maven:maven-compat:3.0-alpha-2.classpath"/>
+    <path refid="library.maven:_org.apache.maven.wagon:wagon-provider-api:1.0-beta-4.classpath"/>
+    <path refid="library.maven:_org.codehaus.plexus:plexus-container-default:1.0-beta-3.0.5.classpath"/>
+    <path refid="library.maven:_org.apache.xbean:xbean-reflect:3.4.classpath"/>
+    <path refid="library.maven:_commons-logging:commons-logging-api:1.1.classpath"/>
+    <path refid="library.maven:_com.google.code.google-collections:google-collect:snapshot-20080530.classpath"/>
+    <path refid="library.maven:_org.codehaus.woodstox:wstx-asl:3.2.6.classpath"/>
+    <path refid="library.maven:_stax:stax-api:1.0.1.classpath"/>
+    <path refid="library.maven:_org.sonatype.spice:model-builder:1.3.classpath"/>
+    <path refid="library.maven:_org.apache.maven:maven-project-builder:3.0-alpha-2.classpath"/>
+    <pathelement location="${common.testoutput.dir}"/>
+    <pathelement location="${common.output.dir}"/>
+    <path refid="library.maven:_com.gexin.platform:gexin-rp-sdk-http:4.0.1.2.classpath"/>
+    <path refid="library.maven:_com.gexin.platform:gexin-rp-sdk-base:4.0.0.7.classpath"/>
+    <path refid="library.maven:_org.codehaus.jackson:jackson-all:1.8.5.classpath"/>
+    <path refid="library.maven:_com.google.protobuf:protobuf-java:2.5.0.classpath"/>
+    <path refid="library.maven:_com.gexin.platform:gexin-rp-sdk-template:4.0.0.5.classpath"/>
+    <path refid="library.maven:_org.springframework.data:spring-data-redis:1.5.0.release.classpath"/>
+    <path refid="library.maven:_redis.clients:jedis:2.8.0.classpath"/>
+    <path refid="library.maven:_org.apache.commons:commons-pool2:2.3.classpath"/>
+    <path refid="library.maven:_org.springframework:spring-context-support:4.0.2.release.classpath"/>
+    <path refid="library.maven:_org.springframework:spring-jms:4.0.2.release.classpath"/>
+    <path refid="library.maven:_org.apache.activemq:activemq-all:5.9.0.classpath"/>
+    <path refid="library.maven:_org.apache.xbean:xbean-spring:3.16.classpath"/>
+    <path refid="library.maven:_junit:junit:4.7.classpath"/>
+  </path>
+  
+  <path id="ztcmsweb.runtime.module.classpath">
+    <pathelement location="${ztcmsweb.testoutput.dir}"/>
+    <pathelement location="${ztcmsweb.output.dir}"/>
+    <path refid="library.maven:_org.springframework:spring-context:4.0.2.release.classpath"/>
+    <path refid="library.maven:_org.springframework:spring-aop:4.0.2.release.classpath"/>
+    <path refid="library.maven:_aopalliance:aopalliance:1.0.classpath"/>
+    <path refid="library.maven:_org.springframework:spring-beans:4.0.2.release.classpath"/>
+    <path refid="library.maven:_org.springframework:spring-core:4.0.2.release.classpath"/>
+    <path refid="library.maven:_org.springframework:spring-expression:4.0.2.release.classpath"/>
+    <path refid="library.maven:_org.springframework:spring-webmvc:4.0.2.release.classpath"/>
+    <path refid="library.maven:_org.springframework:spring-web:4.0.2.release.classpath"/>
+    <path refid="library.maven:_org.aspectj:aspectjrt:1.6.10.classpath"/>
+    <path refid="library.maven:_org.slf4j:slf4j-api:1.6.6.classpath"/>
+    <path refid="library.maven:_org.slf4j:jcl-over-slf4j:1.6.6.classpath"/>
+    <path refid="library.maven:_org.slf4j:slf4j-log4j12:1.6.6.classpath"/>
+    <path refid="library.maven:_log4j:log4j:1.2.15.classpath"/>
+    <path refid="library.maven:_javax.inject:javax.inject:1.classpath"/>
+    <path refid="library.maven:_org.mybatis:mybatis:3.1.1.classpath"/>
+    <path refid="library.maven:_org.mybatis:mybatis-spring:1.1.1.classpath"/>
+    <path refid="library.maven:_org.springframework:spring-tx:3.1.1.release.classpath"/>
+    <path refid="library.maven:_org.springframework:spring-jdbc:3.1.1.release.classpath"/>
+    <path refid="library.maven:_javax.servlet:servlet-api:2.5.classpath"/>
+    <path refid="library.maven:_javax.servlet.jsp:jsp-api:2.1.classpath"/>
+    <path refid="library.maven:_javax.servlet:jstl:1.2.classpath"/>
+    <path refid="library.maven:_org.codehaus.jackson:jackson-core-lgpl:1.9.6.classpath"/>
+    <path refid="library.maven:_org.codehaus.jackson:jackson-core-asl:1.9.4.classpath"/>
+    <path refid="library.maven:_org.codehaus.jackson:jackson-mapper-asl:1.9.5.classpath"/>
+    <path refid="library.maven:_org.codehaus.jackson:jackson-mapper-lgpl:1.9.6.classpath"/>
+    <path refid="library.maven:_com.alibaba:fastjson:1.1.30.classpath"/>
+    <path refid="library.maven:_commons-dbcp:commons-dbcp:1.4.classpath"/>
+    <path refid="library.maven:_commons-pool:commons-pool:1.5.6.classpath"/>
+    <path refid="library.maven:_c3p0:c3p0:0.9.1.2.classpath"/>
+    <path refid="library.maven:_mysql:mysql-connector-java:5.1.16.classpath"/>
+    <path refid="library.maven:_cglib:cglib-nodep:2.2.2.classpath"/>
+    <path refid="library.maven:_org.apache.commons:commons-lang3:3.1.classpath"/>
+    <path refid="library.maven:_commons-io:commons-io:2.4.classpath"/>
+    <path refid="library.maven:_commons-collections:commons-collections:3.2.1.classpath"/>
+    <path refid="library.maven:_commons-beanutils:commons-beanutils:1.8.3.classpath"/>
+    <path refid="library.maven:_commons-logging:commons-logging:1.1.1.classpath"/>
+    <path refid="library.maven:_commons-codec:commons-codec:1.7.classpath"/>
+    <path refid="library.maven:_com.google.code.gson:gson:1.7.1.classpath"/>
+    <path refid="library.maven:_org.mybatis.generator:mybatis-generator-core:1.3.2.classpath"/>
+    <path refid="library.maven:_org.mybatis.generator:mybatis-generator-maven-plugin:1.3.2.classpath"/>
+    <path refid="library.maven:_org.apache.maven:maven-plugin-api:3.0.4.classpath"/>
+    <path refid="library.maven:_org.apache.maven:maven-model:3.0.4.classpath"/>
+    <path refid="library.maven:_org.apache.maven:maven-artifact:3.0.4.classpath"/>
+    <path refid="library.maven:_org.sonatype.sisu:sisu-inject-plexus:2.3.0.classpath"/>
+    <path refid="library.maven:_org.codehaus.plexus:plexus-component-annotations:1.5.5.classpath"/>
+    <path refid="library.maven:_org.codehaus.plexus:plexus-classworlds:2.4.classpath"/>
+    <path refid="library.maven:_org.sonatype.sisu:sisu-inject-bean:2.3.0.classpath"/>
+    <path refid="library.maven:_org.sonatype.sisu:sisu-guice:no_aop:3.1.0.classpath"/>
+    <path refid="library.maven:_org.sonatype.sisu:sisu-guava:0.9.9.classpath"/>
+    <path refid="library.maven:_org.apache.maven:maven-project:3.0-alpha-2.classpath"/>
+    <path refid="library.maven:_org.codehaus.plexus:plexus-utils:1.5.6.classpath"/>
+    <path refid="library.maven:_org.codehaus.plexus:plexus-interpolation:1.1.classpath"/>
+    <path refid="library.maven:_org.apache.maven:maven-compat:3.0-alpha-2.classpath"/>
+    <path refid="library.maven:_org.apache.maven.wagon:wagon-provider-api:1.0-beta-4.classpath"/>
+    <path refid="library.maven:_org.codehaus.plexus:plexus-container-default:1.0-beta-3.0.5.classpath"/>
+    <path refid="library.maven:_org.apache.xbean:xbean-reflect:3.4.classpath"/>
+    <path refid="library.maven:_commons-logging:commons-logging-api:1.1.classpath"/>
+    <path refid="library.maven:_com.google.code.google-collections:google-collect:snapshot-20080530.classpath"/>
+    <path refid="library.maven:_org.codehaus.woodstox:wstx-asl:3.2.6.classpath"/>
+    <path refid="library.maven:_stax:stax-api:1.0.1.classpath"/>
+    <path refid="library.maven:_org.sonatype.spice:model-builder:1.3.classpath"/>
+    <path refid="library.maven:_org.apache.maven:maven-project-builder:3.0-alpha-2.classpath"/>
+    <path refid="common.runtime.module.classpath"/>
+    <path refid="library.maven:_com.gexin.platform:gexin-rp-sdk-http:4.0.1.2.classpath"/>
+    <path refid="library.maven:_com.gexin.platform:gexin-rp-sdk-base:4.0.0.7.classpath"/>
+    <path refid="library.maven:_org.codehaus.jackson:jackson-all:1.8.5.classpath"/>
+    <path refid="library.maven:_com.google.protobuf:protobuf-java:2.5.0.classpath"/>
+    <path refid="library.maven:_com.gexin.platform:gexin-rp-sdk-template:4.0.0.5.classpath"/>
+    <path refid="library.maven:_org.springframework.data:spring-data-redis:1.5.0.release.classpath"/>
+    <path refid="library.maven:_redis.clients:jedis:2.8.0.classpath"/>
+    <path refid="library.maven:_org.apache.commons:commons-pool2:2.3.classpath"/>
+    <path refid="library.maven:_org.springframework:spring-context-support:4.0.2.release.classpath"/>
+    <path refid="library.maven:_org.springframework:spring-jms:4.0.2.release.classpath"/>
+    <path refid="library.maven:_org.apache.activemq:activemq-all:5.9.0.classpath"/>
+    <path refid="library.maven:_org.apache.xbean:xbean-spring:3.16.classpath"/>
+    <path refid="library.maven:_junit:junit:4.7.classpath"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.ztcmsweb">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.ztcmsweb">
+    <patternset refid="excluded.from.module.ztcmsweb"/>
+  </patternset>
+  
+  <path id="ztcmsweb.module.sourcepath">
+    <dirset dir="CMSWeb">
+      <include name="src/main/java"/>
+      <include name="src/main/resources"/>
+    </dirset>
+  </path>
+  
+  <path id="ztcmsweb.module.test.sourcepath">
+    <dirset dir="CMSWeb">
+      <include name="src/test/resources"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.ztcmsweb" depends="compile.module.ztcmsweb.production,compile.module.ztcmsweb.tests" description="Compile module ztCMSWeb"/>
+  
+  <target name="compile.module.ztcmsweb.production" depends="register.custom.compilers,compile.module.common" description="Compile module ztCMSWeb; production classes">
+    <mkdir dir="${ztcmsweb.output.dir}"/>
+    <javac2 destdir="${ztcmsweb.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.ztcmsweb}/javac">
+      <compilerarg line="${compiler.args.ztcmsweb}"/>
+      <bootclasspath refid="ztcmsweb.module.bootclasspath"/>
+      <classpath refid="ztcmsweb.module.production.classpath"/>
+      <src refid="ztcmsweb.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.ztcmsweb"/>
+    </javac2>
+    
+    <copy todir="${ztcmsweb.output.dir}">
+      <fileset dir="CMSWeb/src/main/java">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+      <fileset dir="CMSWeb/src/main/resources">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.ztcmsweb.tests" depends="register.custom.compilers,compile.module.ztcmsweb.production" description="compile module ztCMSWeb; test classes" unless="skip.tests">
+    <mkdir dir="${ztcmsweb.testoutput.dir}"/>
+    <javac2 destdir="${ztcmsweb.testoutput.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.ztcmsweb}/javac">
+      <compilerarg line="${compiler.args.ztcmsweb}"/>
+      <bootclasspath refid="ztcmsweb.module.bootclasspath"/>
+      <classpath refid="ztcmsweb.module.classpath"/>
+      <src refid="ztcmsweb.module.test.sourcepath"/>
+      <patternset refid="excluded.from.compilation.ztcmsweb"/>
+    </javac2>
+    
+    <copy todir="${ztcmsweb.testoutput.dir}">
+      <fileset dir="CMSWeb/src/test/resources">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="clean.module.ztcmsweb" description="cleanup module">
+    <delete dir="${ztcmsweb.output.dir}"/>
+    <delete dir="${ztcmsweb.testoutput.dir}"/>
+  </target>
+</project>
