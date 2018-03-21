@@ -7,6 +7,7 @@ import java.util.List;
  *  人脸识别sdk请求到服务器端的数据类型
  */
 public class InputSnapshotVo implements Serializable {
+    private static final long serialVersionUID = 1L;
     private String camera_id;
     private Integer ipc_id;
     private Integer door_id;

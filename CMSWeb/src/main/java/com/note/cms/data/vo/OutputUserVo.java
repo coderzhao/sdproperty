@@ -12,6 +12,7 @@ import java.util.List;
  * Created by xuxinjian on 17/7/6.
  */
 public class OutputUserVo implements Serializable {
+//    private static final long serialVersionUID = 1L;
     private Integer id;
     private String mobile;
     private String name;

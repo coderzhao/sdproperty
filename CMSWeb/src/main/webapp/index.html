@@ -3,8 +3,8 @@
 <html>
 <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
-    <meta name="keywords" content="jquery,ui,easy,easyui,web">
-    <meta name="description" content="easyui help you build your web page easily!">
+    <!--<meta name="keywords" content="jquery,ui,easy,easyui,web">-->
+    <!--<meta name="description" content="easyui help you build your web page easily!">-->
     <!--<link rel="stylesheet" type="text/css" href="http://www.jeasyui.net/Public/js/easyui/themes/default/easyui.css">-->
     <!--<link rel="stylesheet" type="text/css" href="http://www.jeasyui.net/Public/js/easyui/themes/icon.css">-->
 
@@ -83,12 +83,12 @@
     </style>
 
 
-    <script src="./css/prefixfree.min.js"></script>
+    <!--<script src="./css/prefixfree.min.js"></script>-->
 
 
 </head>
 
-<body>
+<body onkeydown="keyLogin();">
 
 <div class="login">
     <form id='form1' action='' method="post">
@@ -100,6 +100,10 @@
     <!--<a href="/fl">登录</a>-->
 </div>
 <script>
+    function keyLogin(){
+        if (event.keyCode==13)  //回车键的键值为13
+            reqlogin(); //调用登录按钮的登录事件
+    }
     function reqlogin(){
         var params = {}; //先取得 datagrid 的查询参数
         var fields =$('#form1').serializeArray(); //自动序列化表单元素为JSON对象

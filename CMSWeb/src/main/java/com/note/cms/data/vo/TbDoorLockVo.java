@@ -7,6 +7,8 @@ import com.note.cms.data.model.TbIpc;
  * Created by xuxinjian on 17/7/6.
  */
 public class TbDoorLockVo extends TbDoorLock {
+
+    private static final long serialVersionUID = 1L;
     private String doorName;
 
     public TbDoorLockVo(TbDoorLock input){

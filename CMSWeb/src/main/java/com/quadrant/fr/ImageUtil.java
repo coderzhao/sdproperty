@@ -56,11 +56,22 @@ public class ImageUtil {
 
 	public static byte[] loadImageFile(String file) {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		FileInputStream fileInputStream = null;
 		try {
-			BufferedImage jpgImage = ImageIO.read(new FileInputStream(new File(file)));
+			fileInputStream = new FileInputStream(new File(file));
+			BufferedImage jpgImage = ImageIO.read(fileInputStream);
 			ImageIO.write(jpgImage, "jpeg", baos);
 		} catch (IOException e) {
 			e.printStackTrace();
+		}finally {
+			try {
+				if (fileInputStream!=null){
+					fileInputStream.close();
+				}
+				baos.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 		return baos.toByteArray();
 	}

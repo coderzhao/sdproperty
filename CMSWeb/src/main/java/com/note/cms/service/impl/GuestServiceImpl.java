@@ -20,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -51,7 +52,7 @@ public class GuestServiceImpl implements GuestService {
         try {
             TbGuestExample ue = new TbGuestExample();
             ue.createCriteria().andNameEqualTo(name);
-            List<TbGuest> listGuest = (List<TbGuest>) mTbGuestMapper.selectByExample(ue);
+            List<TbGuest> listGuest = mTbGuestMapper.selectByExample(ue);
             if (listGuest != null && listGuest.size() > 0) {
                 TbGuest ret = listGuest.get(0);
                 return ret;
@@ -64,13 +65,13 @@ public class GuestServiceImpl implements GuestService {
             throw new HException("没有当前名称的访客角色");
         }
     }
-
+//    @Transactional
     @Override
     public TbGuest getByCode(String code) {
         try {
             TbGuestExample ue = new TbGuestExample();
             ue.createCriteria().andCodeEqualTo(code);
-            List<TbGuest> listGuest = (List<TbGuest>) mTbGuestMapper.selectByExample(ue);
+            List<TbGuest> listGuest =  mTbGuestMapper.selectByExample(ue);
             if (listGuest != null && listGuest.size() > 0) {
                 TbGuest ret = listGuest.get(0);
                 return ret;
@@ -342,7 +343,7 @@ public class GuestServiceImpl implements GuestService {
         try {
             TbGuestExample ue = new TbGuestExample();
             ue.createCriteria().andCardNoEqualTo(cardNo);
-            List<TbGuest> listGuest = (List<TbGuest>) mTbGuestMapper.selectByExample(ue);
+            List<TbGuest> listGuest = mTbGuestMapper.selectByExample(ue);
             if (listGuest != null && listGuest.size() > 0) {
                 TbGuest ret = listGuest.get(0);
                 return ret;

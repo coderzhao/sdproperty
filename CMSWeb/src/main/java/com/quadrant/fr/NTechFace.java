@@ -177,9 +177,25 @@ public class NTechFace
 		this.gender = gender;
 	}
 
-    
-	
-	
-    
-    
+    @Override
+    public String toString() {
+        return "NTechFace{" +
+                "id=" + id +
+                ", galleries=" + galleries +
+                ", meta='" + meta + '\'' +
+                ", photo='" + photo + '\'' +
+                ", photo_hash='" + photo_hash + '\'' +
+                ", timestamp=" + timestamp +
+                ", x1=" + x1 +
+                ", x2=" + x2 +
+                ", y1=" + y1 +
+                ", y2=" + y2 +
+                ", normalized='" + normalized + '\'' +
+                ", thumbnail='" + thumbnail + '\'' +
+                ", person_id='" + person_id + '\'' +
+                ", age=" + age +
+                ", emotions=" + emotions +
+                ", gender='" + gender + '\'' +
+                '}';
+    }
 }

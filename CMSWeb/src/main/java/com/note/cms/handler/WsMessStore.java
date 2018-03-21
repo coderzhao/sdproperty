@@ -7,15 +7,16 @@ import org.springframework.web.socket.WebSocketSession;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class WsMessStore {
     private static final Logger logger = LoggerFactory.getLogger(WsMessStore.class);
 
-    private static Map<String, String> message = new HashMap<>();
+    private static ConcurrentHashMap<String, String> message = new ConcurrentHashMap<String,String>();
     private Thread pushMessageThread;
-    private static Map<String, List<WebSocketSession>> macsession = new HashMap<>();
+    private static HashMap<String, List<WebSocketSession>> macsession = new HashMap<>();
 
-    private static volatile Map<WebSocketSession, String> sessionAndMac = new HashMap<>();
+//    private static volatile ConcurrentHashMap<WebSocketSession, String> sessionAndMac = new ConcurrentHashMap<>();
 
     private static WsMessStore instance;
 
@@ -37,7 +38,7 @@ public class WsMessStore {
 //        WsMessStore.palyingCameraMac = palyingCameraMac;
 //    }
 
-    public static void setMacsession(Map<String, List<WebSocketSession>> ms) {
+    public static void setMacsession(HashMap<String, List<WebSocketSession>> ms) {
         macsession = ms;
     }
 

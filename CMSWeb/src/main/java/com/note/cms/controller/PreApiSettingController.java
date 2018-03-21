@@ -125,7 +125,7 @@ public class PreApiSettingController extends BaseWebPreController{
 	@RequestMapping(value = "/querySysName.do", method = RequestMethod.GET)
 	@ResponseBody
 	public TbSys querySysName() {
-		TbSys tbSys = settingService.getByKeyName(settingService.KEY_SYSNAME);
+		TbSys tbSys = settingService.getByKeyName(SettingService.KEY_SYSNAME);
 		return tbSys;//
 	}
 }

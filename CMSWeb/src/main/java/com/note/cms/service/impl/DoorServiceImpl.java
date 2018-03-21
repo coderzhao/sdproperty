@@ -32,7 +32,7 @@ public class DoorServiceImpl implements DoorService {
 		try {
 			TbDoorExample ue = new TbDoorExample();
 			ue.createCriteria().andNameEqualTo(name);
-			List<TbDoor> listDoor = (List<TbDoor>) mTbDoorMapper.selectByExample(ue);
+			List<TbDoor> listDoor =  mTbDoorMapper.selectByExample(ue);
 			if (listDoor != null && listDoor.size() > 0) {
 				TbDoor ret = listDoor.get(0);
 				return ret;

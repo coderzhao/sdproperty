@@ -22,14 +22,29 @@ public class HandshakeInterceptor extends HttpSessionHandshakeInterceptor{
     public boolean beforeHandshake(ServerHttpRequest request,
                                    ServerHttpResponse response, WebSocketHandler wsHandler,
                                    Map<String, Object> attributes) throws Exception {
-//        String ipcidstr = ((ServletServerHttpRequest) request).getServletRequest().getParameter("ipcid");
-//        if (Strings.isNullOrEmpty(ipcidstr)) {
-//            return false;
+        String mac = ((ServletServerHttpRequest) request).getServletRequest().getParameter("mac");
+        String ipcId = ((ServletServerHttpRequest) request).getServletRequest().getParameter("ipcId");
+//        if (Strings.isNullOrEmpty(mac)) {
+//            attributes.put("mac", "nomac");
 //        } else {
-//            Integer ipcid = Integer.valueOf(ipcidstr);
-//            attributes.put("ipcid", ipcid);
+////            Integer ipcid = Integer.valueOf(mac);
+//            attributes.put("mac", mac);
 //        }
-        System.out.println("++++++++++++++++ HandshakeInterceptor: beforeHandshake  ++++++++++++++"+attributes);
+//        if (Strings.isNullOrEmpty(ipcId)) {
+////            return false;
+//        } else {
+//            Integer ipcid = Integer.valueOf(mac);
+//            attributes.put("ipcId", ipcId);
+//        }
+        if(!Strings.isNullOrEmpty(mac)){
+            attributes.put("mac", mac);
+        }
+        if(!Strings.isNullOrEmpty(ipcId)){
+//            Integer ipcId = Integer.valueOf(ipcId);
+            attributes.put("ipcId", Integer.valueOf(ipcId));
+        }
+
+//        System.out.println("++++++++++++++++ HandshakeInterceptor: beforeHandshake  ++++++++++++++"+attributes);
         return super.beforeHandshake(request, response, wsHandler, attributes);
     }
 
@@ -42,7 +57,7 @@ public class HandshakeInterceptor extends HttpSessionHandshakeInterceptor{
                                Exception ex) {
 
 
-        System.out.println("++++++++++++++++ HandshakeInterceptor: afterHandshake  ++++++++++++++");
+//        System.out.println("++++++++++++++++ HandshakeInterceptor: afterHandshake  ++++++++++++++");
         super.afterHandshake(request, response, wsHandler, ex);
     }
 

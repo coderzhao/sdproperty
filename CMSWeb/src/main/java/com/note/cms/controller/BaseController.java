@@ -134,7 +134,7 @@ public class BaseController {
     		String result=jsonIn.toString();
     		if(result.equals(""))
     		{
-    		result=(String)request.getParameter("key");
+    		result=request.getParameter("key");
     		}
     		logger.info("request body: "+ request.getRequestURL() + "====" + result);
 			//logger.info(LMException.PREFIXINFOMESSAGE + "Request Body = " + json);

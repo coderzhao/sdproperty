@@ -8,7 +8,7 @@ import java.util.Date;
  */
 
 public class MPushVO  implements Serializable {
-
+    private static final long serialVersionUID = 1L;
     public final static int TYPE_ALERT = 1;//报警推送，此时id为 alertId
 
     private int type;

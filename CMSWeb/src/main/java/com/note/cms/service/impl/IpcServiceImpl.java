@@ -38,7 +38,7 @@ public class IpcServiceImpl implements IpcService {
 		try {
 			TbIpcExample ue = new TbIpcExample();
 			ue.createCriteria().andNameEqualTo(name);
-			List<TbIpc> listIpc = (List<TbIpc>) mTbIpcMapper.selectByExample(ue);
+			List<TbIpc> listIpc =  mTbIpcMapper.selectByExample(ue);
 			if (listIpc != null && listIpc.size() > 0) {
 				TbIpc ret = listIpc.get(0);
 				return ret;
@@ -155,7 +155,7 @@ public class IpcServiceImpl implements IpcService {
 		try {
 			TbIpcExample ue = new TbIpcExample();
 			ue.createCriteria().andAddressEqualTo(mac.trim());
-			List<TbIpc> listIpc = (List<TbIpc>) mTbIpcMapper.selectByExample(ue);
+			List<TbIpc> listIpc =  mTbIpcMapper.selectByExample(ue);
 			if (listIpc != null && listIpc.size() > 0) {
 				TbIpc ret = listIpc.get(0);
 				return ret;

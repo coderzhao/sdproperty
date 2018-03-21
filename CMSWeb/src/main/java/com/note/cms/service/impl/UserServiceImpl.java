@@ -68,7 +68,7 @@ public class UserServiceImpl implements UserService {
         try {
             TbUserExample ue = new TbUserExample();
             ue.createCriteria().andNameEqualTo(name);
-            List<TbUser> listUser = (List<TbUser>) mTbUserMapper.selectByExample(ue);
+            List<TbUser> listUser =  mTbUserMapper.selectByExample(ue);
             if (listUser != null && listUser.size() > 0) {
                 TbUser ret = listUser.get(0);
                 return ret;
@@ -87,7 +87,7 @@ public class UserServiceImpl implements UserService {
             TbUserExample ue = new TbUserExample();
             TbUserExample.Criteria c = ue.createCriteria();
             c.andMobileEqualTo(mobile);
-            List<TbUser> listUser = (List<TbUser>) mTbUserMapper.selectByExample(ue);
+            List<TbUser> listUser = mTbUserMapper.selectByExample(ue);
             if (listUser != null && listUser.size() > 0) {
                 TbUser ret = listUser.get(0);
                 return ret;

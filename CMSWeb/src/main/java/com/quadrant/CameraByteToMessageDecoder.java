@@ -50,13 +50,13 @@ public class CameraByteToMessageDecoder extends ReplayingDecoder<Void> {
 			in.readBytes(data);
 			fdData.mFaceItem[i].ID = byte2int(data);
 			in.readBytes(data);
-			fdData.mFaceItem[i].left = byte2int(data) / 640.0;
+			fdData.mFaceItem[i].left = byte2int(data) / 640.0 * 1280;
 			in.readBytes(data);
-			fdData.mFaceItem[i].right = byte2int(data) / 640.0;
+			fdData.mFaceItem[i].right = byte2int(data) / 640.0 * 1280;
 			in.readBytes(data);
-			fdData.mFaceItem[i].top = byte2int(data) / 360.0;
+			fdData.mFaceItem[i].top = byte2int(data) / 360.0 * 720;
 			in.readBytes(data);
-			fdData.mFaceItem[i].bottom = byte2int(data) / 360.0;
+			fdData.mFaceItem[i].bottom = byte2int(data) / 360.0 * 720;
 
 		}
 		in.readBytes(dummy);

@@ -67,6 +67,7 @@ public class JsonUtil {
     }
 
     public static class JsonDateSerializer extends JsonSerializer<Date>{
+        private static final long serialVersionUID = 1L;
         private SimpleDateFormat dateFormat;
         public JsonDateSerializer(String format) {
             dateFormat = new SimpleDateFormat(format);

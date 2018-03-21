@@ -30,4 +30,6 @@ public interface SnapshotService extends BaseService{
     public List<OutputSnapshotVo> getLastSnapshot(Integer ipcid, Integer lastsnapid, Integer forward, Integer count);
 
     public void addToSnapshot(InputSnapshotVo snapshot);
+
+    public void openDoorCheck(int doorId, String person_id,float confidence);
 }

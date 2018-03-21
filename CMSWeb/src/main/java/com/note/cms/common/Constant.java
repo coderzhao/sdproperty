@@ -19,5 +19,6 @@ public class Constant {
 
 	public static final int FR_CAMERA_DATA_THRESHOLD = Integer.parseInt(config.getParameter("FR_CAMERA_DATA_THRESHOLD"));
 
+	public static final double FACE_SIZE = Double.parseDouble(config.getParameter("FACE_SIZE"));
 //	public static final String PROXY_IDENTIFY = config.getParameter("proxy_identify");
 }

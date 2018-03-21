@@ -55,12 +55,13 @@
         $(".information_text").css("width",information_box-photographs-35);
         $(".top_text").css("line-height",top_img+"px");
     }
-</script>
 
-<script>
     var baseurl = "http://" + window.location.host + "/sdproperty/";
     var ipclist;//ipc列表， 展示在combox中
-    var ipcid = 1;
+    var ipcId = 1;
+    var mac='';
+//    var pictureReConnect = true;
+//    var videoReConnect = true;
     var pictureWebsocket;
     var videoWebsocket;
     $(function () {
@@ -78,81 +79,38 @@
 
         /*=======================获取Ipc列表，建立Websocket连接=========================*/
         $.ajax({
-            url:baseurl + "PreApiIpc/getAllIpcByUser.do",
-            type:'get',
-            success:function (data) {
-                ipclist =data;
+            url: baseurl + "PreApiIpc/getAllIpcByUser.do",
+            type: 'get',
+            success: function (data) {
+                ipclist = data;
                 $.each(data, function (index, ipc) {
-                    $("#ipc_list").append("<option value="+ipc.id+","+ipc.address+">" + ipc.name + "</option>");
+                    $("#ipc_list").append("<option id=" + ipc.id + " value=" + ipc.id + "," + ipc.address + ">" + ipc.name + "</option>");
                 });
-                console.log(data[0].id);
-                /*===================vicdeoWebsocket=====================*/
-                if ('WebSocket' in window) {
-                    videoWebsocket = new WebSocket("ws://"+window.location.hostname+":8080/sdproperty/webSocketServer.do");
-                } else if ('MozWebSocket' in window) {
-                    videoWebsocket = new MozWebSocket("ws://\""+window.location.hostname+":8080/sdproperty/webSocketServer.do");
-                } else {
-                    videoWebsocket = new SockJS("http://localhost:8080/sdproperty/sockjs/webSocketServer.do");
-                }
-                videoWebsocket.onopen = function (evnt) {
-                    console.log("videoWebSocket连接成功");
-                    videoWebsocket.send(JSON.stringify({mac:data[0].address,flag:"open"}));
-                };
-                videoWebsocket.onmessage = function (evnt) {
-                    var pic = evnt.data;
-                    var pic2 = "data:image;base64,"+pic;
-                    $("#camera").attr("src",pic2)
-                };
-                videoWebsocket.onerror = function (evnt) {
-                    console.log("videoWebSocket连接出错");
-                    videoWebsocket.send(JSON.stringify({mac:data[0].address,flag:"close"}));
-                };
-                videoWebsocket.onclose = function (evnt) {
-                    //alert("websocket连接断开！请按ctrl+F5刷新网页");
-                    console.log("videoWebSocket连接关闭");
-//                    videoWebsocket.send(JSON.stringify({mac:data[0].address,flag:"close"}));
-                };
-
-                /*===================pictureWebsocket=====================*/
-                pictureWebsocket = new WebSocket("ws://"+window.location.hostname+":8080/sdproperty/websocket.do");
-                pictureWebsocket.onerror= function (event) {
-                    console.log("pictureWebSocket连接出错");
-                    pictureWebsocket.send(JSON.stringify({ipcid:data[0].id,flag:"close"}));
-                }
-                pictureWebsocket.onopen = function (event) {
-                    console.log("pictureWebSocket连接成功");
-                    pictureWebsocket.send(JSON.stringify({ipcid:data[0].id,flag:"open"}));
-                };
-                pictureWebsocket.onmessage = function (event) {
-                    showResult(event.data);
-                };
-                pictureWebsocket.onclose = function (event) {
-                    console.log("pictureWebSocket连接关闭");
-                    //alert("websocket连接断开！请按ctrl+F5刷新网页");
-//                    pictureWebsocket.send(JSON.stringify({ipcid:data[0].id,flag:"close"}));
-                };
-
+//                console.log(data[0].id);
+                mac = $("#ipc_list").val().split(",")[1];
+                ipcId = $("#ipc_list").val().split(",")[0];
+                connectVideo(mac);
+                connectPicture(ipcId);
             }
         })
 
     })
 
-    //判断是否已经登录，不是跳到登录页面
-    $.ajaxSetup({
-        //这个方法是目前适应easyui和普通jquery ajax请求的唯一方法，上面的都有各种问题
-        complete: function (XMLHttpRequest, textStatus) {
-            var sessionstatus = XMLHttpRequest.getResponseHeader("sessionstatus"); //通过XMLHttpRequest取得响应头,sessionstatus，
-            if (sessionstatus == 'logout') {
-                //如果超时就处理 ，指定要跳转的页面
-                window.top.location = "../../../index.html";
-            }
-        }
-    });
-
-    function getGuestType(guestCode){
-        switch(guestCode)
-        {
+    //    //判断是否已经登录，不是跳到登录页面
+    //    $.ajaxSetup({
+    //        //这个方法是目前适应easyui和普通jquery ajax请求的唯一方法，上面的都有各种问题
+    //        complete: function (XMLHttpRequest, textStatus) {
+    //            var sessionstatus = XMLHttpRequest.getResponseHeader("sessionstatus"); //通过XMLHttpRequest取得响应头,sessionstatus，
+    //            if (sessionstatus == 'logout') {
+    //                //如果超时就处理 ，指定要跳转的页面
+    //                window.top.location = "../../../index.html";
+    //            }
+    //        }
+    //    });
+    function getGuestType(guestCode) {
+        switch (guestCode) {
             case 1:
+//                $("#notice")[0].play();
                 return "<div class='information_box'>";
                 break;
             case 2:
@@ -160,7 +118,7 @@
                 return "<div class='information_box_blue'>"
                 break;
             case 3:
-//                $("#danger")[0].play();
+                $("#danger")[0].play();
                 return "<div class='information_box_alert_red'>"
                 break;
             case 4:
@@ -173,88 +131,30 @@
         }
     }
 
-    //切换摄像头列表
-    var playFun = function () {
-        var mac = $("#ipc_list").val().split(',')[1];
-        //funPlay(url);
-        //将监控图像列表也修改为新的ipc
-        for (var i = 0; i < ipclist.length; i++) {
-            var item = ipclist[i];
-            if (item.address == mac) {
-                ipcid = item.id;
-            }
-        }
-        var openMsg = {
-            ipcid: ipcid,
-            flag: "open"
-        };
-        var closeMsg = {
-            ipcid: ipcid,
-            flag: "close"
-        }
-//        pictureWebsocket.send(JSON.stringify({mac:mac,flag:"close"}));
-//        videoWebsocket.send(JSON.stringify({mac:mac,flag:"close"}));
-        pictureWebsocket.close();
-        videoWebsocket.close();
-        $("#camera").attr("src","");
 
-        var s = document.getElementById("table_id");
-        var t = s.rows.length
-        if (t > 0) {  //清空table
-            for (var m = 0; m < t; m++) {
-                s.deleteRow(s.rows.length - 1);
+        function checkUndefined(role, level) {
+            if (role) {
+                if (level==1) {
+                    return '<div style="color: #00ee00;font-size:289%">验证通过</div>'
+                }else if(level==3){
+                    return '<div style="color: red;font-size:289%">标记人员</div>'
+                }
+            } else {
+                return '<div style="color: red;font-size:289%">验证失败</div>'
             }
         }
 
-        /*===================vicdeoWebsocket=====================*/
-        if ('WebSocket' in window) {
-            videoWebsocket = new WebSocket("ws://"+window.location.hostname+":8080/sdproperty/webSocketServer.do");
-        } else if ('MozWebSocket' in window) {
-            videoWebsocket = new MozWebSocket("ws://\""+window.location.hostname+":8080/sdproperty/webSocketServer.do");
-        } else {
-            videoWebsocket = new SockJS("http://localhost:8080/sdproperty/sockjs/webSocketServer.do");
-        }
-
-        videoWebsocket.onopen = function (evnt) {
-            //document.getElementById("message").innerHTML="<h3>websocket连接成功</h3>";
-            console.log("WebSocket连接成功");
-            videoWebsocket.send(JSON.stringify({mac:mac,flag:"open"}));
-        };
-        videoWebsocket.onmessage = function (evnt) {
-            var pic = evnt.data;
-            var pic2 = "data:image;base64,"+pic;
-            $("#camera").attr("src",pic2);
-        };
-        videoWebsocket.onerror = function (evnt) {
-            console.log("WebSocket连接出错");
-//            videoWebsocket.send(JSON.stringify({mac:mac,flag:"close"}));
-        };
-        videoWebsocket.onclose = function (evnt) {
-//            alert("websocket连接断开！请按ctrl+F5刷新网页");
-            console.log("WebSocket连接关闭");
-//            videoWebsocket.send(JSON.stringify({mac:mac,flag:"close"}));
-        };
-
-        pictureWebsocket = new WebSocket("ws://"+window.location.hostname+":8080/sdproperty/websocket.do");
-        pictureWebsocket.onopen = function (event) {
-            console.log("conn success");
-            pictureWebsocket.send(JSON.stringify(openMsg));
-        };
-        pictureWebsocket.onmessage = function (event) {
-            showResult(event.data);
-        };
-        pictureWebsocket.onclose = function (event) {
-            console.log("conn close");
-//            pictureWebsocket.send(JSON.stringify(closeMsg));
-        };
-    };
-    function checkUndefined(object) {
-        if(object){
-            return object
-        }else{
-            return "未知"
-        }
-    }
+//    function checkUndefined(object) {
+//        if (object) {
+//            //            if(){
+//            return object
+////                return '<div style="color: #00ee00;font-size:300%">验证通过</div>'
+//            //            }
+//        } else {
+////                return '<div style="color: red;font-size:300%">未通过</div>'
+//            return "未注册"
+//        }
+//    }
 
     function showResult(result) {
         if (result != null) {
@@ -265,80 +165,21 @@
 
                 //每行添加列, 共有1列
                 var cell1 = x.insertCell(-1);
-                var parentDiv=getGuestType(json[i]['securityLevel']);
-                vhtml=parentDiv+'<div class="photographs">'+
-                    '<img src="'+json[i]['photo']+'"/></div>'+
-                    '<div class="information_text">'+
-                    '<p>姓名：'+checkUndefined(json[i]['name'])+'</p>'+
-                    '<p>编码：'+checkUndefined(json[i]['guestCode'])+'</p>'+
-                    '<p>身份：'+checkUndefined(json[i]['roleName'])+'</p>'+
-                    '<p>拍照时间：'+checkUndefined(json[i]['createTime'])+'</p></div>';
+                var parentDiv = getGuestType(json[i]['securityLevel']);
+                vhtml = parentDiv + '<div class="photographs">' +
+                    '<img src="' + json[i]['photo'] + '"/></div>' +
+                    '<div class="information_text">' +
+                    checkUndefined(json[i]['roleName'], json[i]['securityLevel']) +
+//                    '<p>姓名：' + checkUndefined(json[i]['name']) + '</p>' +
+//                    '<p>编码：' + checkUndefined(json[i]['guestCode']) + '</p>' +
+//                    '<p>身份：' + checkUndefined(json[i]['roleName']) + '</p>' +
+//                    '<p>拍照时间：' + checkUndefined(json[i]['createTime']) + '</p>' +
+                    '</div>' +
+                    '</div>';
                 cell1.innerHTML = vhtml;
-//                if (json[i]['securityLevel'] == 1) {
-//                    var vhtml = "<div class='information_box'>" +
-//                        "<div class='photographs'><img src=\"" + json[i]['photo'] + "\" alt=\"\" width=\"146\" height=\"146\"></div>" +
-//                        "<div class='information_text'>" +
-//                        "<p>姓名:<b id='cell_name'>" + json[i]['name'] + "</b>" +
-//                        "<p>编码:<b id='cell_code'>" + json[i]['guestCode'] + "</b>" +
-//                        "<p>身份:<b id='cell_roleName'>" + json[i]['roleName'] + "</b>" +
-//                        //                            "<p>年龄:<b id='cell_age'>" + json[i].age + "</b>" +
-//                        "<p>拍照时间:<b id='cell_createTime'>" + json[i]['createTime'] + "</b>" +
-//                        "</div></div>";
-//                    cell1.innerHTML = vhtml;
-//                } else if (json[i]['securityLevel'] == 3) {
-//                    var vhtml = "<div class='information_box_alert_red'>" +
-//                        "<div class='photographs'><img src=\"" + json[i]['photo'] + "\" alt=\"\" width=\"146\" height=\"146\"></div>" +
-//                        "<div class='information_text'>" +
-//                        "<p>姓名:<b id='cell_name'>" + json[i]['name'] + "</b>" +
-//                        "<p>编码:<b id='cell_code'>" + json[i]['guestCode'] + "</b>" +
-//                        "<p>身份:<b id='cell_roleName'>" + json[i]['roleName'] + "</b>" +
-//                        //                            "<p>年龄:<b id='cell_age'>" + json[i].age + "</b>" +
-//                        "<p>拍照时间:<b id='cell_createTime'>" + json[i]['createTime'] + "</b>" +
-//                        "</div></div>";
-//                    cell1.innerHTML = vhtml;
-//                    $("#danger")[0].play();
-//                } else if (json[i].securityLevel == 2) {
-//                    var vhtml = "<div class='information_box_alert_yellow'>" +
-//                        "<div class='photographs'><img src=\"" + json[i]['photo'] + "\" alt=\"\" width=\"146\" height=\"146\"></div>" +
-//                        "<div class='information_text'>" +
-//                        "<p>姓名:<b id='cell_name'>" + json[i]['name'] + "</b>" +
-//                        "<p>编码:<b id='cell_code'>" + json[i]['guestCode'] + "</b>" +
-//                        "<p>身份:<b id='cell_roleName'>" + json[i]['roleName'] + "</b>" +
-//                        //                            "<p>年龄:<b id='cell_age'>" + json[i].age + "</b>" +
-//                        "<p>拍照时间:<b id='cell_createTime'>" + json[i]['createTime'] + "</b>" +
-//                        "</div></div>";
-//                    cell1.innerHTML = vhtml;
-//                    $("#notice")[0].play();
-//                } else if (json[i].securityLevel == 4) {
-//                    var vhtml = "<div class='information_box_alert_yellow'>" +
-//                        "<div class='photographs'><img src=\"" + json[i]['photo'] + "\" alt=\"\" width=\"146\" height=\"146\"></div>" +
-//                        "<div class='information_text'>" +
-//                        "<p>姓名:<b id='cell_name'>" + json[i]['name'] + "</b>" +
-//                        "<p>编码:<b id='cell_code'>" + json[i]['guestCode'] + "</b>" +
-//                        "<p>身份:<b id='cell_roleName'>" + json[i]['roleName'] + "</b>" +
-//                        //                            "<p>年龄:<b id='cell_age'>" + json[i].age + "</b>" +
-//                        "<p>拍照时间:<b id='cell_createTime'>" + json[i]['createTime'] + "</b>" +
-//                        "</div></div>";
-//                    cell1.innerHTML = vhtml;
-//                    $("#notice")[0].play();
-//                } else {
-//                    var vhtml = "<div class='information_box_alert_yellow'>" +
-//                        "<div class='photographs'><img src=\"" + json[i]['photo'] + "\" alt=\"\" width=\"146\" height=\"146\"></div>" +
-//                        "<div class='information_text'>" +
-//                        "<p>姓名:<b id='cell_name'>未知</b>" +
-//                        "<p>编码:<b id='cell_code'>无</b>" +
-//                        "<p>身份:<b id='cell_roleName'>未知</b>" +
-//                        //                            "<p>年龄:<b id='cell_age'>" + json[i].age + "</b>" +
-//                        "<p>拍照时间:<b id='cell_createTime'>" + json[i]['createTime'] + "</b>" +
-//                        "</div></div>";
-//                    cell1.innerHTML = vhtml;
-//                    $("#strange")[0].play();
-//                }
-//                cell1.setAttribute("width", "80%");
-//                cell1.setAttribute("align", "left");
             }
             var t = s.rows.length
-            var maxline = 9;
+            var maxline = 5;
             if (t > maxline) {  //当table中行数超过最大行数时,删除最早的行
                 for (var m = 0; m < t - maxline; m++) {
                     s.deleteRow(s.rows.length - 1);
@@ -347,6 +188,107 @@
             loadRevealImgDiv();
         }
     };
+
+    /**
+     * 视频推送连接
+     */
+    function connectVideo(mac) {
+        videoWebsocket = new WebSocket("ws://" + window.location.hostname + ":8080/sdproperty/wsVideoPush.do?mac=" + mac);
+        videoWebsocket.onmessage = videoMessage;
+        videoWebsocket.onclose = videoClose;
+        videoWebsocket.onerror = videoError;
+        videoWebsocket.onopen = videoOpen;
+    }
+
+    function videoOpen() {
+        console.log("connect wsVideoPush success")
+    }
+
+    function videoMessage(evnt) {
+        var pic = "data:image;base64," + evnt.data;
+        $("#camera").attr("src", pic)
+    }
+
+    function videoError() {
+        console.log("connect wsVideoPush error")
+    }
+
+    function videoClose() {
+        console.log("wsVideoPush closed")
+        setTimeout(connectVideo(mac),1000)
+    }
+
+    //change camera
+    function playFun() {
+        mac = $("#ipc_list").val().split(",")[1];
+        ipcId = $("#ipc_list").val().split(",")[0];
+//        videoReConnect=false;
+//        pictureReConnect=false;
+//        if (videoWebsocket.readyState == 1) {
+            videoWebsocket.onclose=function () {
+                console.log("change camera video need not reconnect")
+            };
+            videoWebsocket.close()
+//        }
+//        if (pictureWebsocket.readyState == 1) {
+            pictureWebsocket.onclose=function () {
+                console.log("change camera picture need not reconnect")
+            };
+            pictureWebsocket.close();
+//        }
+        $("#camera").attr("src", "");
+
+        //clear push picture data
+        var s = document.getElementById("table_id");
+        var t = s.rows.length
+        if (t > 0) {  //清空table
+            for (var m = 0; m < t; m++) {
+                s.deleteRow(s.rows.length - 1);
+            }
+        }
+        //connect to new ws
+//        pictureReConnect=true;
+//        videoReConnect=true;
+        connectVideo(mac);
+        connectPicture(ipcId);
+    }
+
+    /**
+     * picture推送连接
+     */
+    function connectPicture(ipcId) {
+        pictureWebsocket = new WebSocket("ws://" + window.location.hostname + ":8080/sdproperty/wsPicturePush.do?ipcId=" + ipcId);
+        pictureWebsocket.onmessage = pictureMessage;
+        pictureWebsocket.onclose = pictureClose;
+        pictureWebsocket.onerror = pictureError;
+        pictureWebsocket.onopen = pictureOpen;
+    }
+
+    function pictureOpen() {
+        console.log("connect wsPicturePush success")
+    }
+
+    function pictureMessage(evnt) {
+//        console.log("connect wsPicturePush success");
+//        var pic = evnt.data;
+//        var pic = "data:image;base64," + evnt.data;
+//        $("#camera").attr("src", pic)
+        showResult(evnt.data);
+    }
+
+    function pictureError() {
+        console.log("connect wsPicturePush error")
+    }
+
+    function pictureClose() {
+
+//        if (pictureReConnect) {
+        setTimeout(connectPicture(ipcId),1000)
+//            connectPicture(ipcId)
+//        }
+        console.log("wsPicturePush closed")
+    }
+
 
 </script>
 

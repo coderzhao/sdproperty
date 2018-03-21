@@ -212,7 +212,7 @@ public class BaseWebPreController {
     		}
     		String result=jsonIn.toString();
     		if(result.equals("")){
-    			result=(String)request.getParameter("json");
+    			result=request.getParameter("json");
     		}
     		logger.info("request body: " + request.getRequestURL() + "====" + result);
 			//logger.info(LMException.PREFIXINFOMESSAGE + "Request Body = " + json);

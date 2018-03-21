@@ -29,6 +29,7 @@ public class ZtHttpUtil {
      * @param method HttpMethod
      */
     public static ZtHttpUtilResult sendHttpRequest(String url, String body, HttpMethod method){
+        InputStreamReader isr = null;
         try {
             logger.info(url + "  ==body:" + body);
             ZtHttpUtilResult result = new ZtHttpUtilResult();
@@ -41,7 +42,7 @@ public class ZtHttpUtil {
             chr.getBody().write(body.getBytes());//body中设置请求参数
             ClientHttpResponse res = chr.execute();
             InputStream is = res.getBody(); //获得返回数据,注意这里是个流
-            InputStreamReader isr = new InputStreamReader(is);
+            isr = new InputStreamReader(is);
             BufferedReader br = new BufferedReader(isr);
             String str = "";
             while((str = br.readLine())!=null){
@@ -60,6 +61,14 @@ public class ZtHttpUtil {
             // TODO Auto-generated catch block
             logger.error(e.getMessage());
             e.printStackTrace();
+        }finally {
+            if (isr != null){
+                try {
+                    isr.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
         return null;
     }

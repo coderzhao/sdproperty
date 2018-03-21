@@ -6,6 +6,8 @@ import com.note.cms.data.model.TbIpc;
  * Created by xuxinjian on 17/7/6.
  */
 public class TbIpcVo extends TbIpc {
+
+    private static final long serialVersionUID = 1L;
     private String doorName;
 
     public TbIpcVo(TbIpc input){

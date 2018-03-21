@@ -14,11 +14,15 @@ import com.note.cms.service.*;
 import com.note.common.Plugin.Page;
 import com.note.common.utils.HException;
 import com.note.common.utils.HTextUtils;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.fluent.Request;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.*;
 
 
@@ -41,8 +45,8 @@ public class SnapshotServiceImpl implements SnapshotService {
     private IpcService mIpcService;
     @Autowired
     private SettingService mSettingService;
-    @Autowired
-    private SDKService mSDKService;
+//    @Autowired
+//    private SDKService mSDKService;
     @Autowired
     private DoorLockService mDoorLockService;
     @Autowired
@@ -93,9 +97,9 @@ public class SnapshotServiceImpl implements SnapshotService {
     public Map<String, Object> add(InputSnapshotVo input) {
         Map<String, Object> resultMap = null;
 
-        Date startDate = new Date();
-        long cost;
-        String strCost = "";
+//        Date startDate = new Date();
+//        long cost;
+//        String strCost = "";
 
         //第一步， 根据camera_id 获取ipc_id
         TbIpcExample ipcExample = new TbIpcExample();
@@ -111,11 +115,11 @@ public class SnapshotServiceImpl implements SnapshotService {
             }
         }
         int ipcId = listIpc.get(0).getId();
-        logger.info("ipcId"+ipcId);
-        int doorId = listIpc.get(0).getDoorId();
-        logger.info("doorId"+doorId);
-        cost = new Date().getTime() - startDate.getTime();
-        strCost += "cost1:" + cost;
+//        logger.info("ipcId" + ipcId);
+//        int doorId = listIpc.get(0).getDoorId();
+//        logger.info("doorId" + doorId);
+//        cost = new Date().getTime() - startDate.getTime();
+//        strCost += "cost1:" + cost;
 
         //先增加快照
         TbSnapshot snapshot = new TbSnapshot();
@@ -123,14 +127,18 @@ public class SnapshotServiceImpl implements SnapshotService {
         snapshot.setImagefile(input.getSnapshot_photo());
         snapshot.setIpcId(ipcId);
         //判断相似度，如果相似度低于系统设置的相似度， 则将此次识别结果取消。
-        if (null != input.getGusetCode()) {
-            snapshot.setGuestCode(input.getGusetCode()+"");
-        }
+//        if (null != input.getGusetCode()) {
+//            snapshot.setGuestCode(input.getGusetCode() + "");
+//        }
         if (input.getFace() != null) {
-            float nowConfidence = input.getFace().getConfidence();
-            if (mSettingService.checkConfidenceEnough(nowConfidence)) {
-                //如果识别出来的信任度足够
-                snapshot.setGuestCode(input.getFace().getPerson_id() + "");
+            TbGuest guest = mGuestService.getByCode(input.getGusetCode() + "");
+            logger.info(Thread.currentThread().getName()+"  sdkcode:"+input.getGusetCode());
+            if (guest != null) {
+                logger.info(Thread.currentThread().getName()+"sdpcode:"+guest.getCode());
+                float nowConfidence = input.getFace().getConfidence();
+                if (mSettingService.checkConfidenceEnough(nowConfidence)) {
+                    //如果识别出来的信任度足够
+                    snapshot.setGuestCode(input.getFace().getPerson_id() + "");
 //					TbGuest tbGuest =mGuestService.getByCode(input.getFace().getPerson_id() + "");
 //					if(tbGuest != null){
 //						Integer count =tbGuest.getCount();
@@ -139,113 +147,130 @@ public class SnapshotServiceImpl implements SnapshotService {
 //						tbGuest.setCount(count);
 //						int result =mTbGuestMapper.updateByPrimaryKeySelective(tbGuest);
 //					}
+                }
             }
+
         }
         try {
             snapshot.setId(1);
-            int re = mTbSnapshotMapper.insert(snapshot);
-
-            cost = new Date().getTime() - startDate.getTime();
-            strCost += "cost2:" + cost;
+            mTbSnapshotMapper.insert(snapshot);
+//
+//            cost = new Date().getTime() - startDate.getTime();
+//            strCost += "cost2:" + cost;
 
             //如果识别失败， 不走一下步骤，如增加face，增加访客， 开门
             logger.info("快照已经存储，判断是否业主");
 //        logger.info("mSettingService.checkConfidenceEnough(input.getFace().getConfidence())"+mSettingService.checkConfidenceEnough(input.getFace().getConfidence()));
-            logger.info("HTextUtils.isEmpty(snapshot.getGuestCode())" + HTextUtils.isEmpty(snapshot.getGuestCode()));
+            logger.info("访客id是否使空" + HTextUtils.isEmpty(snapshot.getGuestCode()));
             if (null != input.getFace()) {
-                if (!HTextUtils.isEmpty(snapshot.getGuestCode()) && mSettingService.checkConfidenceEnough(input.getFace().getConfidence())) {
+                if (!HTextUtils.isEmpty(snapshot.getGuestCode())) {
                     //如果识别出来用户头像的code， 再增加 tb_snapshot_face 表
-                    logger.info("识别出是业主");
+                    logger.info("识别出是业主---"+Thread.currentThread().getName());
                     TbSnapshotFace item = input.getFace().createSnapshot();
                     item.setSnapshotId(snapshot.getId());
                     item.setIpcId(ipcId);
                     item.setGuestCode(snapshot.getGuestCode());
+//                    logger.error(input.getCamera_id());
+//                    logger.error(input.getSnapshot_photo());
                     mTbSnapshotFaceMapper.insert(item);
 
-                    cost = new Date().getTime() - startDate.getTime();
-                    strCost += "cost3:" + cost;
+//                    cost = new Date().getTime() - startDate.getTime();
+//                    strCost += "cost3:" + cost;
                     //增加到访客列表
                     //仅当识别的code不为空， 也就是识别出结果来， 才增加到访客列表，否则不增加到访客列表
                     add2Guest(input);
 
-                    cost = new Date().getTime() - startDate.getTime();
-                    strCost += "cost4:" + cost;
-
-                    //是否开门
-                    TbDoorLock lock = mDoorLockService.getByDoorId(doorId);
-                    if (lock != null) {
-                        //该门岗装了门禁
-                        Integer code = input.getFace().getPerson_id();
-                        TbGuest guest = mGuestService.getByCode(code + "");
-
-                        cost = new Date().getTime() - startDate.getTime();
-                        strCost += "cost5:" + cost;
-
-                        if (guest != null) {
-                            TbGuestRole role = mTbGuestRoleMapper.selectByPrimaryKey(guest.getGuestRoleId());
-                            if (role != null) {
-                                if (role.getAutoOpenDoor() == 1) {
-                                    boolean needOpen = true;
-                                    if (role.getLimitTime() != null) {//不为null
-                                        if (role.getLimitTime()) {//不为false，则进入限制时间模式
-                                            //如果限制开门时间
-                                            Date now = new Date();
-                                            if (guest.getLockStartTime() != null) {
-                                                if (now.getTime() < guest.getLockStartTime().getTime()) {
-                                                    logger.info("failopendoor当前时间小于允许开门的最小时间，不开门");
-                                                    needOpen = false;//当前时间小于允许开门的最小时间，不开门
-                                                }
-                                            }
-                                            if (guest.getLockEndTime() != null) {
-                                                if (now.getTime() > guest.getLockEndTime().getTime()) {
-                                                    //当前时间大于允许开门的最大时间， 不开门
-                                                    logger.info("failopendoor当前时间大于允许开门的最大时间， 不开门");
-                                                    needOpen = false;
-                                                }
-                                            }
-                                        }
-                                    }
-                                    if (needOpen) {
-                                        //找到该用户， 该开门
-                                        logger.info("opendoorlock:" + lock.toString());
-                                        cost = new Date().getTime() - startDate.getTime();
-                                        strCost += "cost6:" + cost;
-
-                                        resultMap = new HashMap<String, Object>();
-                                        resultMap.put("ip", lock.getIp());
-                                        resultMap.put("port", lock.getPort());
-                                        resultMap.put("line", lock.getLine());
-                                        resultMap.put("on_off", 1);
-                                        resultMap.put("time", lock.getTime());
-                                        //直接返回，不用主动开锁了
-//								mSDKService.flashOpenDoor(lock.getIp(), lock.getPort(), lock.getLine(), lock.getTime());
-
-                                        cost = new Date().getTime() - startDate.getTime();
-                                        strCost += "cost7:" + cost;
-                                        logger.info("lockresult:" + resultMap.toString());
-                                    } else {
-                                        logger.info("该用户不再允许开门的时间段内，不开门");
-                                    }
-
-                                }
-                            }
-                        }
-                    }
-                    cost = new Date().getTime() - startDate.getTime();
-                    strCost += "cost8:" + cost;
-                    if (cost > 500) {
-                        logger.warn("addSendSnapshot:" + strCost);
-                    }
+//                    cost = new Date().getTime() - startDate.getTime();
+//                    strCost += "cost4:" + cost;
+//
+//
+//                    cost = new Date().getTime() - startDate.getTime();
+//                    strCost += "cost8:" + cost;
+//                    if (cost > 500) {
+//                        logger.warn("addSendSnapshot:" + strCost);
+//                    }
                 } else {
                     //判断code＝ null， end
                     logger.info("code = null,陌生访客");
                 }
             }
-        }catch (Exception e){
-            logger.error("check error:"+e.getMessage());
+        } catch (Exception e) {
+            logger.error("check error:" + e.getMessage());
         }
-        logger.info("addSendSnapshot:" + strCost);
+//        logger.info("addSendSnapshot:" + strCost);
         return resultMap;
+    }
+
+    //    private void openDoor(int doorId, InputSnapshotVo input ) {
+    public void openDoorCheck(int doorId, String person_id,float confidence) {
+        //是否开门
+        TbDoorLock lock = mDoorLockService.getByDoorId(doorId);
+        if (lock != null) {
+            //该门岗装了门禁
+//            Integer code = person_id;
+            TbGuest guest = mGuestService.getByCode(person_id);
+
+//            float nowConfidence = confidence.getFace().getConfidence();
+            if (guest != null &&mSettingService.checkConfidenceEnough(confidence)) {
+                logger.info("check user code id:" + guest.getCode());
+                TbGuestRole role = mTbGuestRoleMapper.selectByPrimaryKey(guest.getGuestRoleId());
+                if (role != null) {
+                    if (role.getAutoOpenDoor() == 1) {
+                        boolean needOpen = true;
+                        if (role.getLimitTime() != null) {//不为null
+                            if (role.getLimitTime()) {//不为false，则进入限制时间模式
+                                //如果限制开门时间
+                                Date now = new Date();
+                                if (guest.getLockStartTime() != null) {
+                                    if (now.getTime() < guest.getLockStartTime().getTime()) {
+                                        logger.info("failopendoor当前时间小于允许开门的最小时间，不开门");
+                                        needOpen = false;//当前时间小于允许开门的最小时间，不开门
+                                    }
+                                }
+                                if (guest.getLockEndTime() != null) {
+                                    if (now.getTime() > guest.getLockEndTime().getTime()) {
+                                        //当前时间大于允许开门的最大时间， 不开门
+                                        logger.info("failopendoor当前时间大于允许开门的最大时间， 不开门");
+                                        needOpen = false;
+                                    }
+                                }
+                            }
+                        }
+                        if (needOpen) {
+                            logger.info("识别业主，准备开锁");
+                            logger.info("ip:" + lock.getIp().toString());
+                            logger.info("Port:" + lock.getPort().toString());
+                            logger.info("line:" + lock.getLine().toString());
+//                                logger.info("on_off:"+"1");
+                            logger.info("time:" + lock.getTime().toString());
+//					String url = "http://192.168.10.208:8888/";
+                            try {
+                                HttpResponse response = Request.Post(Constant.SWITCH_IP_PORT)
+                                        .connectTimeout(10000)
+                                        .socketTimeout(30000)
+                                        //							.addHeader("Authorization", "Token " + ntechToken)
+                                        .body(MultipartEntityBuilder
+                                                .create()
+                                                .addTextBody("ip", lock.getIp())
+                                                .addTextBody("port", lock.getPort().toString())
+                                                .addTextBody("line", lock.getLine().toString())
+                                                .addTextBody("on_off", "1")
+                                                .addTextBody("time", lock.getTime().toString())
+                                                .build())
+                                        .execute().returnResponse();
+                            } catch (Exception e) {
+                                logger.error("开始请求异常：" + e.getMessage());
+                            }
+                            logger.info("完成开锁");
+                        }
+//                            logger.info("lockresult:" + resultMap.toString());
+                    } else {
+                        logger.info("该用户不再允许开门的时间段内，不开门");
+                    }
+
+                }
+            }
+        }
     }
 
     public int getCount(ParamSnapshot param) {

@@ -29,7 +29,7 @@ public class GuestRoleServiceImpl implements GuestRoleService {
 		try {
 			TbGuestRoleExample ue = new TbGuestRoleExample();
 			ue.createCriteria().andNameEqualTo(name);
-			List<TbGuestRole> listGuestRole = (List<TbGuestRole>) mTbGuestRoleMapper.selectByExample(ue);
+			List<TbGuestRole> listGuestRole = mTbGuestRoleMapper.selectByExample(ue);
 			if (listGuestRole != null && listGuestRole.size() > 0) {
 				TbGuestRole ret = listGuestRole.get(0);
 				return ret;

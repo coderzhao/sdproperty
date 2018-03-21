@@ -11,6 +11,9 @@ import org.apache.http.client.fluent.Request;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.util.EntityUtils;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,6 +21,7 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.util.Iterator;
 //import com.quadrant.face.DetectedFace;
 
 
@@ -30,6 +34,7 @@ public class NTechFRService {
 	private String findFaceHost;
 	private String findFacePort;
 	private String findFaceVersion;
+    private static JSONParser jsonParser = new JSONParser();
 	
 	
 	public NTechFRService (){
@@ -86,26 +91,87 @@ public class NTechFRService {
 //				//multiple faces, need to test performance compare FD+FR with multi-FR 
 //				rsp = callNTech(fd.mJpgData);
 //			}
-			rsp = callNTech(fd.mJpgData);
-			if(rsp==null||rsp.indexOf("NO_FACES")!=-1){
-				return null;
-			}
+            FaceDefine faceDefine = fd.mFaceItem[0];
+            if (faceDefine == null) {
+                rsp = callNTech(fd.mJpgData);
+            } else {
+                rsp = callNTech(fd.mJpgData, faceDefine.left, faceDefine.top, faceDefine.right, faceDefine.bottom);
+            }
+            if (rsp == null || rsp.indexOf("NO_FACES") != -1) {
+                return null;
+            }
 //			if(rsp.indexOf("face")==-1&&rsp.indexOf("confidence")==-1){
 //				return new NTechIdentifyResponse();
 //			}
-			result = gson.fromJson(rsp, NTechIdentifyResponse.class);
+            result = gson.fromJson(rsp, NTechIdentifyResponse.class);
 
-		} catch (ClientProtocolException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
-		return result;
-	}
-	
-	protected String callNTech(byte[] imageBytes , String bbox) throws ClientProtocolException, IOException {
-		String url = "http://"+getHost()+":8000/v1/faces/gallery/"+getGallery()+"/identify/";
+        } catch (ClientProtocolException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return result;
+    }
+
+    public FaceDefine[] imageDetect(FDCameraData fdCameraData) {
+        logger.debug("===========detect============");
+        byte[] image = fdCameraData.mJpgData;
+        HttpResponse response = null;
+        int i = 0;
+        FaceDefine[] faceDefines = null;
+        String url = "http://" + getHost() + ":8000/v0/detect/";
+        try {
+            response = Request.Post(url)
+                    .connectTimeout(10000)
+                    .socketTimeout(30000)
+                    .addHeader("Authorization", "Token " + ntechToken)
+                    .body(MultipartEntityBuilder
+                            .create()
+                            //.addTextBody("mf_selector", "all")
+                            .addBinaryBody("photo", image, ContentType.create("image/jpeg"), "photo.jpg")
+                            .build())
+                    .execute().returnResponse();
+            String reply = EntityUtils.toString(response.getEntity());
+            logger.debug(reply);
+            int responseCode = response.getStatusLine().getStatusCode();
+            if (responseCode != 200) {
+                logger.info("请求未正确响应：" + responseCode);
+                logger.info(reply);
+                return null;
+            }
+            JSONObject jsonObject = (JSONObject) jsonParser.parse(reply);
+            if (jsonObject.containsKey("faces")) {
+                JSONArray faceArray = (JSONArray) jsonObject.get("faces");
+                int faceNum = faceArray.size();
+                if (faceArray.size() == 0) {
+//                    logger.error("图片中没有人脸！");
+                    return null;
+                }
+                faceDefines = new FaceDefine[faceNum];
+                Iterator iterator1 = faceArray.iterator();
+                while (iterator1.hasNext()) {
+                    JSONObject face = (JSONObject) (iterator1.next());
+                    FaceDefine faceDefine = new FaceDefine();
+
+                    faceDefine.left = (double) (long) face.get("x1");
+                    faceDefine.right = (double) (long) face.get("x2");
+                    faceDefine.top = (double) (long) face.get("y1");
+                    faceDefine.bottom = (double) (long) face.get("y2");
+                    faceDefines[i] = faceDefine;
+                    i++;
+                }
+            }
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            return null;
+        }
+
+        return faceDefines;
+    }
+
+    protected String callNTech(byte[] imageBytes, String bbox) throws ClientProtocolException, IOException {
+        String url = "http://" + getHost() + ":8000/v1/faces/gallery/" + getGallery() + "/identify/";
         HttpResponse response = Request.Post(url)
                 .connectTimeout(10000)
                 .socketTimeout(30000)
@@ -120,28 +186,31 @@ public class NTechFRService {
                         .build())
                 .execute().returnResponse();
         return EntityUtils.toString(response.getEntity());
-	}
-	
-	
-	protected String callNTech(byte[] imageBytes , int x1,int y1,int x2 , int y2) throws ClientProtocolException, IOException {
-		String url = "http://"+getHost()+":8000/v1/faces/gallery/"+getGallery()+"/identify/";
+    }
+
+
+    protected String callNTech(byte[] imageBytes, double x1, double y1, double x2, double y2) throws ClientProtocolException, IOException {
+        String url = "http://" + getHost() + ":8000/v0/faces/gallery/" + getGallery() + "/identify/";
         HttpResponse response = Request.Post(url)
                 .connectTimeout(10000)
                 .socketTimeout(30000)
                 .addHeader("Authorization", "Token " + ntechToken)//Token 4BBj-6pjv
                 .body(MultipartEntityBuilder
                         .create()
-                        .addTextBody("mf_selector", "all")
+                        //.addTextBody("mf_selector", "all")
                         .addTextBody("n", "1")
-                        .addTextBody("bbox", String.format("[[%s,%s,%s,%s]]", x1,y1,x2,y2))
+                        .addTextBody("bbox", String.format("[[%s,%s,%s,%s]]", x1, y1, x2, y2))
                         .addBinaryBody("photo", imageBytes, ContentType.create("image/jpeg"), "photo.jpg")
                         .build())
                 .execute().returnResponse();
-        return EntityUtils.toString(response.getEntity());
-	}
-	
-	protected String callNTech(byte[] imageBytes) throws ClientProtocolException, IOException {
-		String url = "http://"+getHost()+":8000/v1/faces/gallery/"+getGallery()+"/identify/";
+        if (response.getStatusLine().getStatusCode() == 200) {
+            return EntityUtils.toString(response.getEntity());
+        }
+        return null;
+    }
+
+    protected String callNTech(byte[] imageBytes) throws ClientProtocolException, IOException {
+        String url = "http://" + getHost() + ":8000/v1/faces/gallery/" + getGallery() + "/identify/";
         HttpResponse response = Request.Post(url)
                 .connectTimeout(10000)
                 .socketTimeout(30000)
@@ -161,66 +230,64 @@ public class NTechFRService {
         }
         return null;
 
-	}
-	
-	protected void drawBoxesOnImage(int x , int y , int w , int h , String name, BufferedImage bgImage)
-			throws IOException
-	{
-		Graphics graph = bgImage.getGraphics();
-		graph.setColor(Color.RED);
-		
-			graph.drawRect(x, y, w, h);
-			
-			graph.drawString(name, x, y - 10);
-		
-		graph.dispose();
-	}
-	
-	protected BufferedImage loadImage(byte[] jpg)
-	{
-		BufferedImage jpgImage = null;
-		try
-		{
-			jpgImage = ImageIO.read(new ByteArrayInputStream(jpg));
-		}
-		catch (IOException e)
-		{
-			e.printStackTrace();
-		}
-		return jpgImage;
-	}
-	
-	protected byte[] convertBufferedImage2Byte(BufferedImage jpgImage) {
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		try
-		{
-            ImageIO.write(jpgImage, "jpeg", baos);
-		}
-		catch (IOException e)
-		{
-			e.printStackTrace();
-		}
-		return baos.toByteArray();
-	}
+    }
 
-	protected byte[] loadImageFile(String file) {
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		try
-		{
-			BufferedImage jpgImage = ImageIO.read(new FileInputStream(new File(file)));
+    protected void drawBoxesOnImage(int x, int y, int w, int h, String name, BufferedImage bgImage)
+            throws IOException {
+        Graphics graph = bgImage.getGraphics();
+        graph.setColor(Color.RED);
+
+        graph.drawRect(x, y, w, h);
+
+        graph.drawString(name, x, y - 10);
+
+        graph.dispose();
+    }
+
+    protected BufferedImage loadImage(byte[] jpg) {
+        BufferedImage jpgImage = null;
+        try {
+            jpgImage = ImageIO.read(new ByteArrayInputStream(jpg));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return jpgImage;
+    }
+
+    protected byte[] convertBufferedImage2Byte(BufferedImage jpgImage) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try {
             ImageIO.write(jpgImage, "jpeg", baos);
-		}
-		catch (IOException e)
-		{
-			e.printStackTrace();
-		}
-		return baos.toByteArray();
-	}
-	
-	
-	
-	
-//	public static void main(String[] args) {
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return baos.toByteArray();
+    }
+
+    protected byte[] loadImageFile(String file) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        FileInputStream fileInputStream = null;
+        try {
+            fileInputStream = new FileInputStream(new File(file));
+            BufferedImage jpgImage = ImageIO.read(fileInputStream);
+            ImageIO.write(jpgImage, "jpeg", baos);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }finally {
+            try {
+                if(fileInputStream!=null){
+                    fileInputStream.close();
+                }
+                baos.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return baos.toByteArray();
+    }
+
+
+    //	public static void main(String[] args) {
 //		FaceDefine f1 = new FaceDefine();
 //		f1.left =1;
 //		f1.top = 1;

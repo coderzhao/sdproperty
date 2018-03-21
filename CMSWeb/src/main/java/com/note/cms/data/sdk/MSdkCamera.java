@@ -8,6 +8,8 @@ import java.io.Serializable;
  * Created by xuxinjian on 17/7/6.
  */
 public class MSdkCamera implements Serializable {
+
+    private static final long serialVersionUID = 1L;
     private String detector;
     private String id;
     private String meta;

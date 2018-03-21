@@ -86,7 +86,7 @@
 	<mvc:resources mapping="/img/**" location="/img/"/>
 	<mvc:resources mapping="/js/**" location="/js/"/>
 	<mvc:resources mapping="/css/**" location="/css/"/>
-	<!--<mvc:resources mapping="/html/**" location="/html/"/>-->
+	<mvc:resources mapping="/note/**" location="/note/"/>
 	<!--<mvc:resources mapping="/snapshot/**" location="/snapshot/"/>-->
 	<mvc:resources mapping="/upload/**" location="/upload/"/>
 	
@@ -108,7 +108,7 @@
 				<beans:value>classpath:redis.properties</beans:value><!-- 引入redis配置文件 -->
 				<beans:value>classpath:sa.properties</beans:value><!-- 定义spring-jdbc配置信息路径 -->
 				<beans:value>classpath:mongodb.properties</beans:value><!-- 定义spring-mongodb配置信息路径 -->
-				<beans:value>classpath:config.properties</beans:value><!-- 定义spring-mongodb配置信息路径 -->
+				<beans:value>classpath:config.properties</beans:value><!-- 定义整体配置参数 -->
 			</beans:list>
 		</beans:property>
 	</beans:bean>
@@ -172,6 +172,7 @@
 		<beans:property name="keySerializer" ref="stringSerializer" />
 		<beans:property name="enableTransactionSupport" value="true" />
 	</beans:bean>
+	<!--<cache:annotation-driven />-->
 	<!--redis end-->
 
 	<!-- mongo-begin -->

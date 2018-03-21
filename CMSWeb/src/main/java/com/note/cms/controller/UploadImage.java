@@ -149,7 +149,7 @@ public class UploadImage {
             items = upload.parseRequest(request);
             Iterator<FileItem> i = items.iterator();
             while (i.hasNext()) {
-                FileItem fi = (FileItem) i.next();
+                FileItem fi = i.next();
                 File fileForName = new File(fi.getName());
                 String fileName = fileForName.getName();
                 logger.info("filename:"+fileName);

@@ -710,4 +710,30 @@ public class TbSnapshotFace implements Serializable {
     public void setConfidence(Float confidence) {
         this.confidence = confidence;
     }
+
+    @Override
+    public String toString() {
+        return "TbSnapshotFace{" +
+                "id=" + id +
+                ", snapshotId=" + snapshotId +
+                ", guestCode='" + guestCode + '\'' +
+                ", ipcId=" + ipcId +
+                ", galleries='" + galleries + '\'' +
+                ", meta='" + meta + '\'' +
+                ", photo='" + photo + '\'' +
+                ", timestamp=" + timestamp +
+                ", x1=" + x1 +
+                ", x2=" + x2 +
+                ", y1=" + y1 +
+                ", y2=" + y2 +
+                ", normalized='" + normalized + '\'' +
+                ", age=" + age +
+                ", thumbnail='" + thumbnail + '\'' +
+                ", photoHash='" + photoHash + '\'' +
+                ", personId=" + personId +
+                ", faceId=" + faceId +
+                ", gender='" + gender + '\'' +
+                ", confidence=" + confidence +
+                '}';
+    }
 }

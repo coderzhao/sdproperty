@@ -10,6 +10,8 @@ import java.util.List;
  *  人脸识别sdk请求到服务器端的数据类型
  */
 public class OutputSnapshotVo implements Serializable {
+
+    private static final long serialVersionUID = 1L;
     private Integer snapshotId; //靠这个来识别顺序和前后关系
     private String name;//访客姓名
     private String  roleName;//角色名称

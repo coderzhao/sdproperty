@@ -19,14 +19,14 @@ import java.util.List;
  */
 @Component
 public class QueryThread extends Thread {
-    private int currentIndex;
+//    private int currentIndex;
     private Integer ipcid;
     private Integer lastsnapid;
     private SnapshotService mSnapshotService;
     public volatile Boolean exit =false ;
-    private List<OutputSnapshotVo> resultList;
-    private List<WebSocketSession> webSocketSessionList;
-    public QueryThread(List<WebSocketSession> sessionList,SnapshotService mSnapshotService,
+//    private List<OutputSnapshotVo> resultList;
+    private HashSet<WebSocketSession> webSocketSessionList;
+    public QueryThread(HashSet<WebSocketSession> sessionList,SnapshotService mSnapshotService,
                        Integer ipcid){
         this.webSocketSessionList = sessionList;
         this.ipcid = ipcid;
@@ -37,7 +37,7 @@ public class QueryThread extends Thread {
 
     }
 
-    public void setWebsocketSessionList(List<WebSocketSession> sessionList){
+    public void setWebsocketSessionList(HashSet<WebSocketSession> sessionList){
         this.webSocketSessionList = sessionList;
     }
 
@@ -56,8 +56,8 @@ public class QueryThread extends Thread {
             if(list!=null&&list.size()>0){
                 TextMessage textMessage =new TextMessage(JSON.toJSONString(list),true);
                 try {
-                    List<WebSocketSession> newWebSocketSessionList =new ArrayList(new HashSet(webSocketSessionList));
-                    for (WebSocketSession session :newWebSocketSessionList){
+//                    HashSet<WebSocketSession> newWebSocketSessionList =new ArrayList(new HashSet(webSocketSessionList));
+                    for (WebSocketSession session :webSocketSessionList){
                         session.sendMessage(textMessage);
                     }
                 } catch (IOException e) {
@@ -66,7 +66,7 @@ public class QueryThread extends Thread {
             }
 
             try {
-                Thread.sleep(2000);
+                Thread.sleep(1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

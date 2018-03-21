@@ -9,6 +9,7 @@ import com.note.common.utils.HTextUtils;
  * Created by xuxinjian on 17/7/6.
  */
 public class TbGuestVo extends TbGuest {
+    private static final long serialVersionUID = 1L;
     private String guestRoleName; //访客角色名称
     private String AccessGuestName; //被访者名称
     private String photo;
