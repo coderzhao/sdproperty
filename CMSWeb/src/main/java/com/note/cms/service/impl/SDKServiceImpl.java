@@ -280,7 +280,8 @@ public class SDKServiceImpl implements SDKService{
                 logger.warn("flashOpenDoorThreadFun 33：" );
                 return ;
             }
-            String url = urlRoot + "/switch/on_off_ex";
+//            String url = urlRoot + "/switch/on_off_ex";
+//            String url =  Constant.SWITCH_IP_PORT;
 //            JSONObject obj = new JSONObject();
 //            obj.put("ip", ip);
 //            obj.put("port", port);
@@ -291,7 +292,7 @@ public class SDKServiceImpl implements SDKService{
 //					String url = "http://192.168.10.208:8888/";
 
             logger.info("flashOpenDoorThreadFun: " + ip + " port:" + port + " line:" + line);
-            HttpResponse response = Request.Post(url)
+            HttpResponse response = Request.Post(Constant.SWITCH_IP_PORT)
                     .connectTimeout(10000)
                     .socketTimeout(30000)
 //							.addHeader("Authorization", "Token " + ntechToken)

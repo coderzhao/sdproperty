@@ -245,7 +245,7 @@ public class SnapshotServiceImpl implements SnapshotService {
                             logger.info("time:" + lock.getTime().toString());
 //					String url = "http://192.168.10.208:8888/";
                             try {
-                                HttpResponse response = Request.Post(Constant.SWITCH_IP_PORT)
+                                Request.Post(Constant.SWITCH_IP_PORT)
                                         .connectTimeout(10000)
                                         .socketTimeout(30000)
                                         //							.addHeader("Authorization", "Token " + ntechToken)
