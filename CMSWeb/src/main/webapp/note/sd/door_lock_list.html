@@ -50,13 +50,30 @@
                     },
                     {field:'url',title:'操作',width:20,sortable:false,
                         //formatter:function(value,row,index){return '<a style="color:blue" href="'+row.url+'">查看</a>'}
-                        formatter:function(value,row,index){return '<a href="#" onclick="openDoor(\'' + row.id+ '\')">开门</a>  '}
-
+                        formatter:function(value,row,index){
+                            if(row.securityLevel ==1){
+                                return '<a href="#" onclick="openDoor(\'' + row.id+ '\')">开门</a>  ';
+                            }else if(row.securityLevel ==3){
+                				return '<a href="#" onclick="openDoor(\'' + row.id+ '\')">警示灯</a>  ';
+                            }else{
+                            	return "未配置正确";
+                            }
+                        }
                     },
                     {field:'name',title:'名字',width:30,sortable:true,
                         formatter:function(value,row,index){return row.name;} //需要formatter一下才能显示正确的数据
                     },
-                    {field:'ip',title:'ip',width:60,sortable:true,
+                    {field:'securityLevel',title:'响应',width:60,sortable:true,
+                        formatter:function(value,row,index){
+                        if(row.securityLevel ==1){
+                            return "门禁";
+						}else if(row.securityLevel ==3){
+                            return "警示灯";
+						}else {
+						    return "未配置正确";
+						}
+                    }
+                    },{field:'ip',title:'ip',width:60,sortable:true,
                         formatter:function(value,row,index){return row.ip;}
                     },
                     {field:'port',title:'port',width:60,sortable:true,

@@ -16,6 +16,7 @@ public class TbDoorLockVo extends TbDoorLock {
         this.setIp(input.getIp());
         this.setDoorId(input.getDoorId());
         this.setId(input.getId());
+        this.setSecurityLevel(input.getSecurityLevel());
         this.setName(input.getName());
         this.setPort(input.getPort());
         this.setLine(input.getLine());
