@@ -39,6 +39,8 @@
 	ID：<input name="id"  readonly="true" type="text" style="width: 100"  class="easyui-validatebox" > <br>
 	名称：<input name="name" style="width: 200" validType="length[1,64]" class="easyui-validatebox" required="true"><br>
 	所属门岗：<input  class="easyui-combobox" id="parentagent" name="doorId" required="true" ><br>
+	响应：<select name="securityLevel" class="easyui-combobox" required="true" >
+	<option value="1">门禁</option><option value="3">警示灯</option></select><br>
 	ip：<input name="ip" style="width: 200" validType="length[1,64]" class="easyui-validatebox" required="true"><br>
 	port：<input name="port" style="width: 200" validType="length[1,30]" class="easyui-validatebox" required="true"><br>
 	line(线）：<input name="line" style="width: 200" validType="length[1,4]" class="easyui-validatebox" required="true"><br>

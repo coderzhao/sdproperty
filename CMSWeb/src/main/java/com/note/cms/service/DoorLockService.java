@@ -19,6 +19,6 @@ public interface DoorLockService extends BaseService{
     public void delete(Integer id);
     public TbDoorLock addOrUpdate(TbDoorLock user) throws HException;
     public int getCount(TbDoorLock param);
-    public TbDoorLock getByDoorId(Integer id);//获取某个们的门禁
+    public TbDoorLock getByDoorId(Integer id,boolean dangerFlag);//获取某个门的门禁
     public boolean openDoor(Integer id);
 }

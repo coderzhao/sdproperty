@@ -1,5 +1,6 @@
 package com.note.cms.service.impl;
 
+import com.note.cms.common.Constant;
 import com.note.cms.dao.TbDoorLockMapper;
 import com.note.cms.dao.TbDoorMapper;
 import com.note.cms.data.model.*;
@@ -94,10 +95,15 @@ public class DoorLockServiceImpl implements DoorLockService {
 		return (int)(mTbDoorLockMapper.countByExample(example));
 	}
 
-	public TbDoorLock getByDoorId(Integer id){
+	public TbDoorLock getByDoorId(Integer id,boolean dangerFlag){
 		TbDoorLockExample example = new TbDoorLockExample();
 		TbDoorLockExample.Criteria c = example.createCriteria();
 		c.andDoorIdEqualTo(id);
+		if(dangerFlag){
+			c.andSecurityLevelEqualTo(Constant.dangerLevel);
+		}else {
+			c.andSecurityLevelNotEqualTo(Constant.dangerLevel);
+		}
 		List<TbDoorLock> listDoorLock = mTbDoorLockMapper.selectByExample(example);
 		if(listDoorLock != null && listDoorLock.size() > 0){
 			return listDoorLock.get(0);

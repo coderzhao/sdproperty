@@ -132,9 +132,9 @@ public class SnapshotServiceImpl implements SnapshotService {
 //        }
         if (input.getFace() != null) {
             TbGuest guest = mGuestService.getByCode(input.getGusetCode() + "");
-            logger.info(Thread.currentThread().getName()+"  sdkcode:"+input.getGusetCode());
+            logger.info(Thread.currentThread().getName() + " sdkcode:"+input.getGusetCode());
             if (guest != null) {
-                logger.info(Thread.currentThread().getName()+"sdpcode:"+guest.getCode());
+                logger.info(Thread.currentThread().getName()+"sdpcode:"+ guest.getCode());
                 float nowConfidence = input.getFace().getConfidence();
                 if (mSettingService.checkConfidenceEnough(nowConfidence)) {
                     //如果识别出来的信任度足够
@@ -165,7 +165,7 @@ public class SnapshotServiceImpl implements SnapshotService {
             if (null != input.getFace()) {
                 if (!HTextUtils.isEmpty(snapshot.getGuestCode())) {
                     //如果识别出来用户头像的code， 再增加 tb_snapshot_face 表
-                    logger.info("识别出是业主---"+Thread.currentThread().getName());
+                    logger.info("识别出是业主---" + Thread.currentThread().getName());
                     TbSnapshotFace item = input.getFace().createSnapshot();
                     item.setSnapshotId(snapshot.getId());
                     item.setIpcId(ipcId);
@@ -202,20 +202,50 @@ public class SnapshotServiceImpl implements SnapshotService {
     }
 
     //    private void openDoor(int doorId, InputSnapshotVo input ) {
-    public void openDoorCheck(int doorId, String person_id,float confidence) {
+    public void openDoorCheck(int doorId, String person_id, float confidence) {
         //是否开门
-        TbDoorLock lock = mDoorLockService.getByDoorId(doorId);
+        TbDoorLock lock = mDoorLockService.getByDoorId(doorId,false);
         if (lock != null) {
             //该门岗装了门禁
 //            Integer code = person_id;
             TbGuest guest = mGuestService.getByCode(person_id);
-
 //            float nowConfidence = confidence.getFace().getConfidence();
-            if (guest != null &&mSettingService.checkConfidenceEnough(confidence)) {
+            if (guest != null && mSettingService.checkConfidenceEnough(confidence)) {
                 logger.info("check user code id:" + guest.getCode());
                 TbGuestRole role = mTbGuestRoleMapper.selectByPrimaryKey(guest.getGuestRoleId());
                 if (role != null) {
-                    if (role.getAutoOpenDoor() == 1) {
+                    if (role.getSecurityLevel().equals(Constant.dangerLevel)) {
+                        TbDoorLock dangerLock = mDoorLockService.getByDoorId(doorId,true);
+                        if(dangerLock!=null){
+                            logger.info("识别危险人员，开启警示器");
+                            logger.info("ip:" + dangerLock.getIp().toString());
+                            logger.info("Port:" + dangerLock.getPort().toString());
+                            logger.info("line:" + dangerLock.getLine().toString());
+//                                logger.info("on_off:"+"1");
+                            logger.info("time:" + dangerLock.getTime().toString());
+//					String url = "http://192.168.10.208:8888/";
+                            try {
+                                Request.Post(Constant.SWITCH_IP_PORT)
+                                        .connectTimeout(10000)
+                                        .socketTimeout(30000)
+                                        //							.addHeader("Authorization", "Token " + ntechToken)
+                                        .body(MultipartEntityBuilder
+                                                .create()
+                                                .addTextBody("ip", dangerLock.getIp())
+                                                .addTextBody("port", dangerLock.getPort().toString())
+                                                .addTextBody("line", dangerLock.getLine().toString())
+                                                .addTextBody("on_off", "1")
+                                                .addTextBody("time", dangerLock.getTime().toString())
+                                                .build())
+                                        .execute().returnResponse();
+                            } catch (Exception e) {
+                                logger.error("开始请求异常：" + e.getMessage());
+                            }
+                            logger.info("警示器已开启");
+                        }else {
+                            logger.info("doorId:"+doorId+"未配置警示器doorlock");
+                        }
+                    } else if (role.getAutoOpenDoor() == 1 && !role.getSecurityLevel().equals(Constant.dangerLevel)) {
                         boolean needOpen = true;
                         if (role.getLimitTime() != null) {//不为null
                             if (role.getLimitTime()) {//不为false，则进入限制时间模式
@@ -267,9 +297,10 @@ public class SnapshotServiceImpl implements SnapshotService {
                     } else {
                         logger.info("该用户不再允许开门的时间段内，不开门");
                     }
-
                 }
             }
+        }else {
+            logger.info("doorId:"+doorId+"未配置开门doorlock");
         }
     }
 
