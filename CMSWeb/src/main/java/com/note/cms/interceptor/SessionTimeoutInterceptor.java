@@ -20,32 +20,33 @@ public class SessionTimeoutInterceptor extends HandlerInterceptorAdapter {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        String requestUrl = request.getRequestURI();
+//        String requestUrl = request.getRequestURI();
 
-        for(String url : allowUrls) {
-            int index = requestUrl.indexOf(url);
-            if(index >=0) {
-                return true;
-            }
-        }
-        //logger.info("===========HandlerInterceptor1 preHandle");
-        String username= (String) WebUtils.getSessionAttribute(request, "username");
-
-        String requestType = request.getHeader("X-Requested-With");//识别ajax的响应头
-        if(username==null){
-            if (requestType != null && requestType.equals("XMLHttpRequest")) {//如果是ajax类型，响应logout给前台
-                response.setStatus(499);
-                response.addHeader("sessionstatus", "logout");
-                response.getWriter().print("logout");
-            }else{
-                response.sendRedirect("./index");//首页居多
-            }
-            //logger.info("preHandle: 888" );
-            return false;//终止后面的拦截器的执行
-        }else{
-            //logger.info("preHandle: 999" );
-            return true;//让下一个拦截器去处理
-        }
+//        for(String url : allowUrls) {
+//            int index = requestUrl.indexOf(url);
+//            if(index >=0) {
+//                return true;
+//            }
+//        }
+//        //logger.info("===========HandlerInterceptor1 preHandle");
+//        String username= (String) WebUtils.getSessionAttribute(request, "username");
+//
+//        String requestType = request.getHeader("X-Requested-With");//识别ajax的响应头
+//        if(username==null){
+//            if (requestType != null && requestType.equals("XMLHttpRequest")) {//如果是ajax类型，响应logout给前台
+//                response.setStatus(499);
+//                response.addHeader("sessionstatus", "logout");
+//                response.getWriter().print("logout");
+//            }else{
+//                response.sendRedirect("./index");//首页居多
+//            }
+//            //logger.info("preHandle: 888" );
+//            return false;//终止后面的拦截器的执行
+//        }else{
+//            //logger.info("preHandle: 999" );
+//            return true;//让下一个拦截器去处理
+//        }
+        return true;
 
     }
 

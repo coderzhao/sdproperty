@@ -13,11 +13,13 @@ public class Constant {
 
 	public static final String IMAGE_PATH = config.getParameter("snapshotFolder");
 
+	public static final String ENROLL_PATH = config.getParameter("enrollPath");
+
 	public static final int THREADS = Integer.parseInt(config.getParameter("THREADS_NUM"));
 
 	public static final float FR_CONFIDENCE_THRESHOLD = Float.parseFloat(config.getParameter("FR_CONFIDENCE_THRESHOLD"));
 
-	public static final int FR_CAMERA_DATA_THRESHOLD = Integer.parseInt(config.getParameter("FR_CAMERA_DATA_THRESHOLD"));
+	public static final int FR_CAMERA_DATA_THRESHOLD = Integer.parseInt(config.getParameter("cameraDataThreshold"));
 
 	public static final double FACE_SIZE = Double.parseDouble(config.getParameter("FACE_SIZE"));
 

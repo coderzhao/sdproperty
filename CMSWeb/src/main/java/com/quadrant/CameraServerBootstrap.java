@@ -12,14 +12,16 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.oio.OioServerSocketChannel;
 import io.netty.handler.timeout.IdleStateHandler;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.net.InetSocketAddress;
 import java.util.concurrent.TimeUnit;
 
 //import java.nio.channels.SocketChannel;
 
-
+@Component
 public class CameraServerBootstrap {
 	
 	@Autowired
@@ -29,15 +31,17 @@ public class CameraServerBootstrap {
 	private ServerBootstrap bootstrap = null; 
 	private EventLoopGroup group = null;
 	public CameraServerBootstrap() {}
-	
+
+	@PostConstruct
 	public void init() {
 		WsMessStore.getInstance().startPushMessThread();
-		group = new OioEventLoopGroup();
+//		group = new OioEventLoopGroup();
+		group = new NioEventLoopGroup();
 		try {
 			bootstrap = new ServerBootstrap();
 			bootstrap.group(group)
-//					.channel(NioServerSocketChannel.class)
-					.channel(OioServerSocketChannel.class)
+					.channel(NioServerSocketChannel.class)
+//					.channel(OioServerSocketChannel.class)
 					.localAddress(new InetSocketAddress(port))
 					.childHandler(new ChannelInitializer<SocketChannel>() {
 						@Override
@@ -71,9 +75,9 @@ public class CameraServerBootstrap {
 		}
 	}
 	
-	public static void main(String[] args) {
-		CameraServerBootstrap b = new CameraServerBootstrap();
-		b.init();
-	}
+//	public static void main(String[] args) {
+//		CameraServerBootstrap b = new CameraServerBootstrap();
+//		b.init();
+//	}
 	
 }

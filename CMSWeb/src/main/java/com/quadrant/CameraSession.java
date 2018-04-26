@@ -18,15 +18,10 @@ import javax.imageio.stream.ImageInputStream;
 
 import com.note.cms.common.Constant;
 import com.note.cms.controller.BaseController;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.fluent.Request;
-import org.apache.http.entity.ContentType;
-import org.apache.http.entity.mime.MultipartEntityBuilder;
-import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Strings;
+
 import com.note.cms.data.model.TbGuest;
 import com.note.cms.data.model.TbIpc;
 import com.note.cms.data.vo.InputSnapshotFaceVo;
@@ -43,14 +38,14 @@ import com.quadrant.fr.NTechIdentifyResponse;
 
 public class CameraSession extends BaseController {
     private static final Logger logger = LoggerFactory.getLogger(CameraSession.class);
-    private static final Logger frlog = LoggerFactory.getLogger("FRPERFORMANCE");
+//    private static final Logger frlog = LoggerFactory.getLogger("FRPERFORMANCE");
     private static final int DEQUE_MAX_LENGTH = 10;//buffer size
     private String mac = null;
     private boolean bindViewer = false;
     private ArrayDeque<FDCameraData> buffer = null;
     private int count = 0;
-    private static final int PROCESS_FRAME_INTERVAL = 2;
-    private static final float FR_CONFIDENCE_THRESHOLD = Constant.FR_CONFIDENCE_THRESHOLD;
+//    private static final int PROCESS_FRAME_INTERVAL = 2;
+//    private static final float FR_CONFIDENCE_THRESHOLD = Constant.FR_CONFIDENCE_THRESHOLD;
     private static final ThreadLocal<SimpleDateFormat> sdfs = new ThreadLocal<>();
     private boolean online = true;
 
@@ -93,13 +88,13 @@ public class CameraSession extends BaseController {
 //		synchronized(data) {
 //			count++;
 //			if(count >= PROCESS_FRAME_INTERVAL) {
-        List<FaceBox> faces = analyse(d, false, false);
+//        List<FaceBox> faces = analyse(d, false, false);
 //				if(bindViewer) {
 //					if(buffer.size() >= DEQUE_MAX_LENGTH)
 //						buffer.poll();
         //draw faces
-        drawFaceBoxs(d, faces);
-        notifyViewers(d);
+//        drawFaceBoxs(d, faces);
+//        notifyViewers(d);
 //					insertBuffer(d);
 //					buffer.add(d);
 //					logger.info("{} Queue size = {}",d.mStrMac , buffer.size());
@@ -126,13 +121,9 @@ public class CameraSession extends BaseController {
     }
 
 
-    public List<FaceBox> analyse(FDCameraData fdCameraData, boolean drawFaceBox, boolean notifyViewer) {
-        if (!fdCameraData.mHasNewFd) return Collections.emptyList();
-        if (fdCameraData.mFaceNum == 0) return Collections.emptyList();
-//        StringBuilder
-//        for(int i=0;i<d.mFaceNum;i++){
-//
-//        }
+    public void analyse(FDCameraData fdCameraData, boolean drawFaceBox, boolean notifyViewer) {
+        if (!fdCameraData.mHasNewFd) return;
+        if (fdCameraData.mFaceNum == 0) return;
 
 //直接将图片转发到代理
 //        try {
@@ -156,40 +147,37 @@ public class CameraSession extends BaseController {
         // =============================人脸限制=================================
         //sdk detect
         FaceDefine[] faceDefines = nTechFRService.imageDetect(fdCameraData);
-        
+
         //camera delete
 //        FaceDefine[] faceDefines = fdCameraData.mFaceItem;
-        if(faceDefines==null||faceDefines.length==0){
+        if (faceDefines == null || faceDefines.length == 0) {
 //            logger.warn("");
-            return Collections.emptyList();
+            return;
         }
         FaceDefine identifyFaceCoor = faceDefines[0];
         if (fdCameraData.mFaceNum > 1) {
-            for (int i = 1; i < fdCameraData.mFaceNum; i++) {
+            for (int i = 1; i < faceDefines.length; i++) {
                 identifyFaceCoor = faceSizeCompare(identifyFaceCoor, faceDefines[i]);
             }
         }
         if (calSize(identifyFaceCoor) < Constant.FACE_SIZE)
-            return Collections.emptyList();
+            return;
         fdCameraData.mFaceItem[0] = identifyFaceCoor;
 //======================================================================
 
-        //使用拓展处理逻辑,不依赖代理处理
         logger.info("Doing FR " + fdCameraData.mStrMac);
-//        logger.info(Thread.currentThread().getName());
-//        long start = System.currentTimeMillis();
         List<FaceBox> fbs = new ArrayList<>();
         NTechIdentifyResponse analysis = nTechFRService.analyze(fdCameraData);
 
 //        frlog.debug("{} Cost = {} millis", d.mStrMac, System.currentTimeMillis() - start);
         if (analysis == null) {
 //            logger.debug("NTechIdentifyResponse is null");
-            return Collections.emptyList();
+            return;
         }
         Map<String, List<NTechFaceMatch>> result = analysis.getResults();
         if (result == null) {
 //            logger.debug("NTechFaceMatch is null");
-            return Collections.emptyList();
+            return;
         }
         for (String key : result.keySet()) {
             String faceBox = key.substring(1, key.length() - 1);
@@ -225,17 +213,17 @@ public class CameraSession extends BaseController {
 //                }
             }
 
-            if (bestMatch != null && bestMatch.getConfidence() > FR_CONFIDENCE_THRESHOLD && !Strings.isNullOrEmpty(bestMatch.getFace().getMeta()))//found
-            {
-                FaceBox fb = new FaceBox(x1, y1, w, h, bestMatch.getFace().getMeta());
-                fbs.add(fb);
-            } else if (bestMatch != null) {//low confidence
-                FaceBox fb = new FaceBox(x1, y1, w, h, bestMatch.getFace().getMeta());
-                fbs.add(fb);
-            } else {//unknown, how to deal with unknown
-                FaceBox fb = new FaceBox(x1, y1, w, h, "Unknown");
-                fbs.add(fb);
-            }
+//            if (bestMatch != null && bestMatch.getConfidence() > FR_CONFIDENCE_THRESHOLD && !Strings.isNullOrEmpty(bestMatch.getFace().getMeta()))//found
+//            {
+//                FaceBox fb = new FaceBox(x1, y1, w, h, bestMatch.getFace().getMeta());
+//                fbs.add(fb);
+//            } else if (bestMatch != null) {//low confidence
+//                FaceBox fb = new FaceBox(x1, y1, w, h, bestMatch.getFace().getMeta());
+//                fbs.add(fb);
+//            } else {//unknown, how to deal with unknown
+//                FaceBox fb = new FaceBox(x1, y1, w, h, "Unknown");
+//                fbs.add(fb);
+//            }
 
             // draw face box
 //            if (drawFaceBox) drawFaceBoxs(d, fbs);
@@ -247,21 +235,12 @@ public class CameraSession extends BaseController {
                 saveToDatabase(fdCameraData, bestMatch, x1, y1, w, h);
             } catch (Exception e) {
                 logger.error("error in fr " + e.getMessage());
-                return null;
+                return;
             }
-//            if (config.isSaveFR2DB()) {
-//                try {
-////					long ss = System.currentTimeMillis();
-//                    saveToDatabase(d, bestMatch);
-////					logger.info("FR save databse time cost = {} millis", System.currentTimeMillis() - ss);
-//                } catch (Exception e) {
-//                    logger.error("FR result save to dabase error :" + e.getMessage(), e);
-//                    e.printStackTrace();
-//                }
-//            }
-        logger.info("{} FR result,{}", fdCameraData.mStrMac, bestMatch.getFace().toString()+bestMatch.getConfidence()+"");
+
+            logger.info("{} FR result,{}", fdCameraData.mStrMac, bestMatch.getFace().toString() + bestMatch.getConfidence() + "");
         }
-        return fbs;
+//        return fbs;
 //        return Collections.emptyList();
 
     }
@@ -276,7 +255,7 @@ public class CameraSession extends BaseController {
         //开门判断
         if (face != null && null != face.getFace() && face.getFace().getPerson_id() != null) {
 
-            snapshotService.openDoorCheck(camera.getDoorId(), face.getFace().getPerson_id(),face.getConfidence());
+            snapshotService.openDoorCheck(camera.getDoorId(), face.getFace().getPerson_id(), face.getConfidence());
         }
 
         if (camera == null) throw new HException("Camera " + data.mStrMac + " not exists in database.");
@@ -454,8 +433,8 @@ public class CameraSession extends BaseController {
             jpgImage = ImageIO.read(byteArrayInputStream);
         } catch (IOException e) {
             e.printStackTrace();
-        }finally {
-            if(byteArrayInputStream!=null){
+        } finally {
+            if (byteArrayInputStream != null) {
                 try {
                     byteArrayInputStream.close();
                 } catch (IOException e) {
@@ -473,7 +452,7 @@ public class CameraSession extends BaseController {
             ImageIO.write(jpgImage, "jpeg", baos);
         } catch (IOException e) {
             e.printStackTrace();
-        }finally {
+        } finally {
             try {
                 baos.close();
             } catch (IOException e) {

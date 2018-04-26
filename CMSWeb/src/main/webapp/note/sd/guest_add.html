@@ -133,8 +133,9 @@
                 return false;
             }
 
-            var guestRole =$("#combobox_guest_role").val();
-            if(guestRole==""){
+//            var guestRole =$("#combobox_guest_role").val();
+            var guestRole =$("#combobox_guest_role").combobox('getText');
+            if(null==guestRole||guestRole==""){
                 alert("请选择访客类型！");
                 return false;
 			}
@@ -183,6 +184,11 @@
 
             if(imageList == null){
                 alert("请选择批量上传的文件夹");
+                return false;
+            }
+            var guestRole =$("#combobox_guest_role").combobox('getText');
+            if(null==guestRole||guestRole==""){
+                alert("请选择访客类型！");
                 return false;
             }
             var requestUrl = baseurl + 'PreApiGuest/addImages.do';

@@ -38,7 +38,7 @@
 		<beans:property name="address" value="${ADDRESS}"/>
 	</beans:bean>
 	
-	<beans:bean class="com.quadrant.CameraServerBootstrap" init-method="init"/>
+	<!--<beans:bean class="com.quadrant.CameraServerBootstrap" init-method="init"/>-->
 	
     <!-- <beans:bean id="IPCServerStartup" class="com.quadrant.IPCServerStartup" init-method="startup">
     		<beans:property name="listener" ref="FDCameraDataHandler"/>
@@ -88,8 +88,7 @@
 	<mvc:resources mapping="/css/**" location="/css/"/>
 	<mvc:resources mapping="/note/**" location="/note/"/>
 	<!--<mvc:resources mapping="/snapshot/**" location="/snapshot/"/>-->
-	<mvc:resources mapping="/upload/**" location="/upload/"/>
-	
+	<!--<mvc:resources mapping="/upload/**" location="/upload/"/>-->
 
 	<!-- Resolves views selected for rendering by @Controllers to .jsp resources in the /WEB-INF/views directory -->
 	<!--<beans:bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">-->
@@ -106,7 +105,7 @@
 		<beans:property name="locations">
 			<beans:list>
 				<beans:value>classpath:redis.properties</beans:value><!-- 引入redis配置文件 -->
-				<beans:value>classpath:sa.properties</beans:value><!-- 定义spring-jdbc配置信息路径 -->
+				<!--<beans:value>classpath:sa.properties</beans:value>&lt;!&ndash; 定义spring-jdbc配置信息路径 &ndash;&gt;-->
 				<beans:value>classpath:mongodb.properties</beans:value><!-- 定义spring-mongodb配置信息路径 -->
 				<beans:value>classpath:config.properties</beans:value><!-- 定义整体配置参数 -->
 			</beans:list>

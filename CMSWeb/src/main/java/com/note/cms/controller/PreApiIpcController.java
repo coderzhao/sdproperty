@@ -140,7 +140,17 @@ public class PreApiIpcController extends BaseWebPreController{
 		//todo 分页查询所有的日志记录
 		try {
 			TbUser self = getTbUser(request);
-
+			if(null==self){
+				List<TbIpc> tbIpcs=mIpcService.getAllIpc();
+				if(null!=tbIpcs&&tbIpcs.size()>0) {
+					List<TbIpcVo> tbIpcVos = new ArrayList<>();
+					for (TbIpc tbIpc : tbIpcs) {
+						TbIpcVo tbIpcVo= new TbIpcVo(tbIpc);
+						tbIpcVos.add(tbIpcVo);
+					}
+					return tbIpcVos;
+				}
+			}
 			List<TbIpcVo> listData;
 			listData = mIpcService.getListPage(self, null, 1, 1000, null, null);
 

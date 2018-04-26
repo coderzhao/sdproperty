@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.note.cms.common.Constant;
 import com.note.cms.common.NUtil;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
@@ -111,15 +112,17 @@ public class UploadImage {
                     logger.info("filename:"+fileName);
                     fileName = NUtil.makeFilename(fileName);
                     logger.info("newfilename:"+fileName);
-                    String path = session.getServletContext().getRealPath("/upload/");
-                    logger.info("path:"+path);
+//                    String path = session.getServletContext().getRealPath("/upload/");
+                    String path=Constant.ENROLL_PATH;
+                    logger.info("path:"+ path);
                     File pathFile =new File(path);
                     if(!pathFile.exists()){
                         pathFile.mkdirs();
                     }
                     File file = new File(path+fileName);
                     item.write(file);
-                    String fileUrl = request.getContextPath() + "/upload/" + fileName;
+//                    String fileUrl = request.getContextPath() + "/upload/" + fileName;
+                    String fileUrl =  "/upload/" + fileName;
                     map.put("url", fileUrl);
                 }
             }
@@ -139,7 +142,8 @@ public class UploadImage {
         logger.info("uploadImages begin");
         Map<String, List<String>> map = new HashMap<>();
         List<String> pathList =new ArrayList<>();
-        String path = session.getServletContext().getRealPath("/upload/");
+//        String path = session.getServletContext().getRealPath("/upload/");
+        String path = Constant.ENROLL_PATH;
         DiskFileItemFactory factory = new DiskFileItemFactory();
         factory.setSizeThreshold(4096); // 设置缓冲区大小，这里是4kb
         factory.setRepository(tempPathFile);// 设置缓冲区目录
@@ -165,7 +169,8 @@ public class UploadImage {
                     }
                     fi.write(savedFile);
                     String personName=fileName.split("\\.")[0];
-                    String fileUrl = request.getContextPath() + "/upload/" + newFileName+"#.pn#"+personName;
+                    String fileUrl =  "/upload/" + newFileName+"#.pn#"+personName;
+//                    String fileUrl = request.getContextPath() + "/upload/" + newFileName+"#.pn#"+personName;
                     pathList.add(fileUrl);
                 }
             }

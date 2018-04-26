@@ -79,8 +79,8 @@
 
         /*=======================获取Ipc列表，建立Websocket连接=========================*/
         $.ajax({
-            url: baseurl + "PreApiIpc/getAllIpcByUser.do",
-            type: 'get',
+            url: baseurl + "PreApiIpc/queryAllIpc.do",
+            type: 'POST',
             success: function (data) {
                 ipclist = data;
                 $.each(data, function (index, ipc) {
